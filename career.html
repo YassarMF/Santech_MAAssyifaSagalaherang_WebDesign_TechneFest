@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Center | EduVerse</title>
+  <meta name="description" content="Analisis kelemahan belajar dan prediksi karir masa depanmu dengan AI Gemini di EduVerse.">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+
+  <style>
+    .ai-card-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .ai-card-icon {
+      width: 48px;
+      height: 48px;
+      border: var(--border-w) solid var(--border);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      flex-shrink: 0;
+    }
+    .ai-card-title {
+      font-family: var(--font-heading);
+      font-weight: 900;
+      font-size: 1.15rem;
+    }
+    .ai-card-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
+    }
+    .ai-data-preview {
+      background: var(--bg-page);
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+    }
+    .ai-data-preview-title {
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.35rem;
+    }
+    .ai-tag {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--border);
+      margin: 0.15rem;
+    }
+    .api-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 1rem 1.25rem;
+      background: var(--card-lemon);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin-bottom: 2rem;
+    }
+    .api-notice-icon {
+      font-size: 1.25rem;
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="app-sidebar"></aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1 class="page-title">🤖 AI Center</h1>
+        <p class="page-subtitle">Analisis kelemahan belajar dan prediksi karir masa depanmu dengan Gemini AI.</p>
+      </div>
+
+      <!-- API Key Notice -->
+      <div class="api-notice" id="api-notice">
+        <span class="api-notice-icon">💡</span>
+        <div>
+          <strong>Gemini API Key diperlukan.</strong> 
+          Buka file <code style="background: var(--white); padding: 0.1rem 0.3rem; border-radius: 4px; border: 1px solid var(--border);">js/gemini.js</code> dan paste API key kamu. 
+          Dapatkan key gratis di <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--primary); font-weight: 700; text-decoration: underline;">Google AI Studio</a>.
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- Section 1: Analisis Kelemahan -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <div class="ai-section">
+        <div class="neo-card-static neo-card-pink" id="weakness-card">
+          <div class="ai-card-header">
+            <div class="ai-card-icon" style="background: var(--card-pink);">🔍</div>
+            <div>
+              <div class="ai-card-title">Analisis Kelemahan Belajar</div>
+              <div class="ai-card-desc">AI akan menganalisis topik yang sering salah dan memberikan saran belajar.</div>
+            </div>
+          </div>
+
+          <!-- Data Preview -->
+          <div class="ai-data-preview" id="weakness-data-preview">
+            <div class="ai-data-preview-title">📋 Data Kelemahanmu</div>
+            <div id="weakness-tags">
+              <!-- Tags rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <button class="neo-btn neo-btn-primary neo-btn-block" id="btn-analyze-weakness">
+            <span id="btn-weakness-text"><i class="fa-solid fa-magnifying-glass-chart"></i> Analisis Saya</span>
+            <span id="btn-weakness-spinner" class="hidden"><span class="spinner" style="border-color: white; border-top-color: transparent;"></span> Menganalisis...</span>
+          </button>
+
+          <!-- Result -->
+          <div id="weakness-result" class="hidden">
+            <div class="ai-result-box" id="weakness-result-text"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════ -->
+      <!-- Section 2: Prospek Karir -->
+      <!-- ═══════════════════════════════════════════════════ -->
+      <div class="ai-section">
+        <div class="neo-card-static neo-card-sky" id="career-card">
+          <div class="ai-card-header">
+            <div class="ai-card-icon" style="background: var(--card-sky);">🚀</div>
+            <div>
+              <div class="ai-card-title">Prospek Karir Masa Depan</div>
+              <div class="ai-card-desc">AI akan memprediksi posisi pekerjaan yang cocok berdasarkan modul yang sudah kamu selesaikan.</div>
+            </div>
+          </div>
+
+          <!-- Data Preview -->
+          <div class="ai-data-preview" id="career-data-preview">
+            <div class="ai-data-preview-title">📚 Modul yang Diselesaikan</div>
+            <div id="career-modules-tags">
+              <!-- Tags rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <button class="neo-btn neo-btn-success neo-btn-block" id="btn-predict-career">
+            <span id="btn-career-text"><i class="fa-solid fa-briefcase"></i> Lihat Potensi Karir</span>
+            <span id="btn-career-spinner" class="hidden"><span class="spinner" style="border-color: white; border-top-color: transparent;"></span> Memprediksi...</span>
+          </button>
+
+          <!-- Result -->
+          <div id="career-result" class="hidden">
+            <div class="ai-result-box" id="career-result-text"></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav" id="mobile-nav"></nav>
+  </div>
+
+  <!-- Script -->
+  <script type="module">
+    import { AppState, ModuleData, getModuleMap, UI } from './js/app.js';
+    import { analyzeWeaknesses, predictCareer, isGeminiReady } from './js/gemini.js';
+
+    // Auth check
+    if (!AppState.requireAuth()) {
+      // Will redirect
+    }
+
+    const currentUser = AppState.getUser();
+    const moduleMap = getModuleMap();
+
+    // Render sidebar & mobile nav
+    UI.renderSidebar('career');
+    UI.renderMobileNav('career');
+
+    // Hide API notice if key is configured
+    if (isGeminiReady()) {
+      document.getElementById('api-notice').style.display = 'none';
+    }
+
+    // ── Render Weakness Tags ─────────────────────────────────
+    function renderWeaknessTags() {
+      const weaknesses = currentUser.weaknesses || [];
+      const container = document.getElementById('weakness-tags');
+
+      if (weaknesses.length === 0) {
+        container.innerHTML = '<span class="text-muted" style="font-size: 0.85rem; font-style: italic;">Belum ada data. Selesaikan beberapa quiz terlebih dahulu! 💪</span>';
+        return;
+      }
+
+      // Deduplicate
+      const unique = [...new Set(weaknesses)];
+      container.innerHTML = unique.map(w => 
+        `<span class="ai-tag" style="background: var(--card-pink);">${w}</span>`
+      ).join('');
+    }
+
+    // ── Render Completed Module Tags ─────────────────────────
+    function renderModuleTags() {
+      const completed = currentUser.completedModules || [];
+      const container = document.getElementById('career-modules-tags');
+
+      if (completed.length === 0) {
+        container.innerHTML = '<span class="text-muted" style="font-size: 0.85rem; font-style: italic;">Belum ada modul yang diselesaikan. Mulai belajar di Learning Path! 📚</span>';
+        return;
+      }
+
+      container.innerHTML = completed.map(id => {
+        const title = moduleMap[id] || id;
+        return `<span class="ai-tag" style="background: var(--card-mint);">✅ ${title}</span>`;
+      }).join('');
+    }
+
+    // ── Analyze Weaknesses ───────────────────────────────────
+    document.getElementById('btn-analyze-weakness').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-analyze-weakness');
+      const btnText = document.getElementById('btn-weakness-text');
+      const btnSpinner = document.getElementById('btn-weakness-spinner');
+      const resultDiv = document.getElementById('weakness-result');
+      const resultText = document.getElementById('weakness-result-text');
+
+      // Check API key
+      if (!isGeminiReady()) {
+        UI.showToast('Gemini API key belum dikonfigurasi! Buka js/gemini.js', 'error');
+        return;
+      }
+
+      const weaknesses = currentUser.weaknesses || [];
+
+      // Show loading
+      btn.disabled = true;
+      btnText.classList.add('hidden');
+      btnText.style.display = 'none';
+      btnSpinner.classList.remove('hidden');
+      btnSpinner.style.display = 'inline-flex';
+
+      try {
+        const result = await analyzeWeaknesses(weaknesses);
+        resultText.textContent = result;
+        resultDiv.classList.remove('hidden');
+        resultDiv.style.display = 'block';
+        UI.showToast('Analisis selesai! 🎯', 'success');
+      } catch (error) {
+        console.error('Weakness analysis error:', error);
+        resultText.textContent = `❌ Error: ${error.message}`;
+        resultDiv.classList.remove('hidden');
+        resultDiv.style.display = 'block';
+        UI.showToast('Gagal menganalisis. Coba lagi.', 'error');
+      } finally {
+        btn.disabled = false;
+        btnText.classList.remove('hidden');
+        btnText.style.display = 'inline-flex';
+        btnSpinner.classList.add('hidden');
+        btnSpinner.style.display = 'none';
+      }
+    });
+
+    // ── Predict Career ───────────────────────────────────────
+    document.getElementById('btn-predict-career').addEventListener('click', async () => {
+      const btn = document.getElementById('btn-predict-career');
+      const btnText = document.getElementById('btn-career-text');
+      const btnSpinner = document.getElementById('btn-career-spinner');
+      const resultDiv = document.getElementById('career-result');
+      const resultText = document.getElementById('career-result-text');
+
+      // Check API key
+      if (!isGeminiReady()) {
+        UI.showToast('Gemini API key belum dikonfigurasi! Buka js/gemini.js', 'error');
+        return;
+      }
+
+      const completedModules = currentUser.completedModules || [];
+
+      // Show loading
+      btn.disabled = true;
+      btnText.classList.add('hidden');
+      btnText.style.display = 'none';
+      btnSpinner.classList.remove('hidden');
+      btnSpinner.style.display = 'inline-flex';
+
+      try {
+        const result = await predictCareer(completedModules, moduleMap);
+        resultText.textContent = result;
+        resultDiv.classList.remove('hidden');
+        resultDiv.style.display = 'block';
+        UI.showToast('Prediksi karir selesai! 🚀', 'success');
+      } catch (error) {
+        console.error('Career prediction error:', error);
+        resultText.textContent = `❌ Error: ${error.message}`;
+        resultDiv.classList.remove('hidden');
+        resultDiv.style.display = 'block';
+        UI.showToast('Gagal memprediksi. Coba lagi.', 'error');
+      } finally {
+        btn.disabled = false;
+        btnText.classList.remove('hidden');
+        btnText.style.display = 'inline-flex';
+        btnSpinner.classList.add('hidden');
+        btnSpinner.style.display = 'none';
+      }
+    });
+
+    // ── Initial Render ───────────────────────────────────────
+    renderWeaknessTags();
+    renderModuleTags();
+  </script>
+</body>
+</html>

@@ -2,20 +2,182 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=login.html">
-  <title>Redirecting...</title>
-  <script src="js/main.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      if (AppState.getUser()) {
-        window.location.href = 'dashboard.html';
-      } else {
-        window.location.href = 'login.html';
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduVerse — Mulai Petualangan Belajarmu!</title>
+  <meta name="description" content="EduVerse: Platform belajar gamifikasi untuk menjadi Data Analyst. Mulai belajar gratis sekarang!">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="auth-page">
+
+  <!-- Floating Decorative Shapes -->
+  <div class="floating-shape shape-1"></div>
+  <div class="floating-shape shape-2"></div>
+  <div class="floating-shape shape-3"></div>
+  <div class="floating-shape shape-4"></div>
+  <div class="floating-shape shape-5"></div>
+
+  <!-- Auth Card -->
+  <div class="auth-card">
+    <div class="neo-card-static" style="padding: 2.5rem;">
+      
+      <!-- Logo -->
+      <div class="auth-logo">
+        <div class="auth-logo-icon">
+          <i class="fa-solid fa-rocket"></i>
+        </div>
+        <span class="auth-logo-text">EduVerse</span>
+      </div>
+
+      <!-- Title -->
+      <div class="text-center" style="margin-bottom: 2rem;">
+        <h1 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Selamat Datang, Explorer! 🚀</h1>
+        <p class="text-muted" style="font-size: 0.9rem;">Masukkan data kamu untuk mulai petualangan belajar.</p>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" autocomplete="off">
+        <div class="auth-field">
+          <label class="auth-label" for="input-name">
+            <i class="fa-solid fa-user" style="margin-right: 0.3rem;"></i> Nama
+          </label>
+          <input
+            type="text"
+            id="input-name"
+            class="neo-input"
+            placeholder="Masukkan namamu..."
+            required
+            minlength="2"
+            maxlength="30"
+            autocomplete="off"
+          >
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label" for="input-school">
+            <i class="fa-solid fa-school" style="margin-right: 0.3rem;"></i> Asal Sekolah
+          </label>
+          <input
+            type="text"
+            id="input-school"
+            class="neo-input"
+            placeholder="Nama sekolah/kampusmu..."
+            required
+            minlength="2"
+            maxlength="60"
+            autocomplete="off"
+          >
+        </div>
+
+        <!-- Error Message -->
+        <div id="login-error" class="hidden" style="
+          background: var(--card-pink);
+          border: 2px solid var(--danger);
+          border-radius: var(--radius-sm);
+          padding: 0.75rem 1rem;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: #991B1B;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        ">
+          <i class="fa-solid fa-circle-exclamation"></i>
+          <span id="login-error-text"></span>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="login-btn" class="neo-btn neo-btn-primary neo-btn-lg neo-btn-block" style="margin-top: 0.5rem;">
+          <span id="login-btn-text">Mulai Petualangan! 🎮</span>
+          <span id="login-btn-spinner" class="hidden"><span class="spinner" style="border-color: white; border-top-color: transparent;"></span></span>
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <p class="text-center text-muted" style="margin-top: 1.5rem; font-size: 0.75rem;">
+        Data kamu tersimpan aman. Masukkan nama yang sama untuk melanjutkan progress. ✨
+      </p>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script type="module">
+    import { AppState, UI } from './js/app.js';
+
+    // If already logged in, redirect to dashboard
+    if (AppState.getUser()) {
+      window.location.href = 'dashboard.html';
+    }
+
+    const form = document.getElementById('login-form');
+    const nameInput = document.getElementById('input-name');
+    const schoolInput = document.getElementById('input-school');
+    const loginBtn = document.getElementById('login-btn');
+    const btnText = document.getElementById('login-btn-text');
+    const btnSpinner = document.getElementById('login-btn-spinner');
+    const errorBox = document.getElementById('login-error');
+    const errorText = document.getElementById('login-error-text');
+
+    function showError(msg) {
+      errorText.textContent = msg;
+      errorBox.classList.remove('hidden');
+      errorBox.style.display = 'flex';
+    }
+
+    function hideError() {
+      errorBox.classList.add('hidden');
+      errorBox.style.display = 'none';
+    }
+
+    function setLoading(isLoading) {
+      loginBtn.disabled = isLoading;
+      btnText.style.display = isLoading ? 'none' : 'inline';
+      btnSpinner.classList.toggle('hidden', !isLoading);
+      if (isLoading) btnSpinner.style.display = 'inline-flex';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+
+      const name = nameInput.value.trim();
+      const school = schoolInput.value.trim();
+
+      if (!name || name.length < 2) {
+        showError('Nama harus minimal 2 karakter.');
+        nameInput.focus();
+        return;
+      }
+
+      if (!school || school.length < 2) {
+        showError('Nama sekolah harus minimal 2 karakter.');
+        schoolInput.focus();
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const user = await AppState.login(name, school);
+        
+        if (user) {
+          // Small delay for UX
+          setTimeout(() => {
+            window.location.href = 'dashboard.html';
+          }, 400);
+        } else {
+          showError('Terjadi kesalahan. Silakan coba lagi.');
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        showError(error.message || 'Gagal masuk. Periksa koneksi internet.');
+        setLoading(false);
       }
     });
   </script>
-</head>
-<body style="background-color: #09090b; color: #fff;">
-  <p>Redirecting...</p>
 </body>
 </html>

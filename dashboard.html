@@ -3,263 +3,530 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard | EduVerse</title>
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>Learning Path | EduVerse</title>
+  <meta name="description" content="Dashboard EduVerse: Ikuti learning path Data Analyst dan selesaikan modul interaktif untuk mendapatkan XP!">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="css/main.css">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* Dashboard-specific progress header */
+    .track-progress {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .track-progress-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .track-progress-number {
+      font-family: var(--font-heading);
+      font-weight: 900;
+      font-size: 1.75rem;
+      color: var(--text);
+    }
+    .track-progress-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .track-divider {
+      width: 2px;
+      height: 40px;
+      background: var(--gray-200);
+      border-radius: 1px;
+    }
+    /* Theory content styling */
+    .theory-content h3 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+    }
+    .theory-content p {
+      margin-bottom: 0.75rem;
+      line-height: 1.7;
+      font-size: 0.95rem;
+    }
+    .theory-content ul {
+      margin-bottom: 0.75rem;
+      padding-left: 1.5rem;
+    }
+    .theory-content li {
+      margin-bottom: 0.4rem;
+      line-height: 1.5;
+      font-size: 0.93rem;
+    }
+    .theory-content code {
+      background: var(--card-lemon);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.88rem;
+      border: 1px solid var(--border);
+    }
+    .theory-content strong {
+      color: var(--text);
+    }
+    .theory-content em {
+      color: var(--primary);
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    /* Quiz feedback */
+    .quiz-feedback {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-heading);
+      font-weight: 800;
+      font-size: 1rem;
+      text-align: center;
+      margin-top: 1rem;
+      border: var(--border-w) solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .quiz-feedback-correct {
+      background: var(--card-mint);
+      color: #065F46;
+    }
+    .quiz-feedback-wrong {
+      background: var(--card-pink);
+      color: #991B1B;
+    }
+
+    /* Completion celebration */
+    .completion-banner {
+      text-align: center;
+      padding: 2rem;
+    }
+    .completion-emoji {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      animation: bounce 1s ease infinite;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+  </style>
 </head>
-<body class="bg-zinc-950 text-zinc-300 antialiased h-screen flex overflow-hidden">
+<body>
+  <div class="app-layout">
 
-  <!-- Sidebar -->
-  <aside class="w-64 bg-zinc-900 border-r border-zinc-800 flex flex-col hidden md:flex shrink-0">
-    <div class="h-16 flex items-center px-6 border-b border-zinc-800">
-      <i class="fa-solid fa-code text-indigo-400 text-xl mr-3"></i>
-      <span class="font-mono font-bold text-lg text-zinc-50 tracking-tight">EduVerse.</span>
-    </div>
-    
-    <nav class="flex-1 py-6 px-4 space-y-2">
-      <a href="dashboard.html" class="flex items-center gap-3 px-4 py-3 bg-zinc-800/50 text-zinc-50 rounded-lg border border-zinc-700 shadow-sm transition-colors">
-        <i class="fa-solid fa-chart-line w-5"></i> Dashboard
-      </a>
-      <a href="planner.html" class="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/30 rounded-lg transition-colors">
-        <i class="fa-solid fa-kanban w-5"></i> Kanban Planner
-      </a>
-      <a href="focus.html" class="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/30 rounded-lg transition-colors">
-        <i class="fa-solid fa-stopwatch w-5"></i> Focus Room
-      </a>
-      <a href="store.html" class="flex items-center gap-3 px-4 py-3 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/30 rounded-lg transition-colors">
-        <i class="fa-solid fa-store w-5"></i> Avatar Store
-      </a>
-    </nav>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="app-sidebar"></aside>
 
-    <div class="p-4 border-t border-zinc-800">
-      <button onclick="AppState.logout()" class="flex items-center gap-3 w-full px-4 py-3 text-zinc-500 hover:text-red-400 transition-colors text-sm font-medium">
-        <i class="fa-solid fa-right-from-bracket"></i> Akhiri Sesi
-      </button>
-    </div>
-  </aside>
+    <!-- Main Content -->
+    <main class="main-content">
 
-  <!-- Mobile Nav (Top) -->
-  <div class="md:hidden fixed top-0 left-0 w-full h-16 bg-zinc-900 border-b border-zinc-800 z-50 flex items-center justify-between px-4">
-    <div class="flex items-center gap-2">
-      <i class="fa-solid fa-code text-indigo-400"></i>
-      <span class="font-mono font-bold text-zinc-50">EduVerse.</span>
-    </div>
-    <!-- Mobile Menu Button could go here, omitting for simplicity, using text links below -->
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1 class="page-title">🗺️ Learning Path</h1>
+        <p class="page-subtitle">Data Analyst Track — Kuasai skill Data Analyst dari nol!</p>
+      </div>
+
+      <!-- Track Progress Bar -->
+      <div class="neo-card-static neo-card-lemon" style="margin-bottom: 2rem;" id="track-progress-card">
+        <div class="track-progress">
+          <div class="milestone-track-icon">📊</div>
+          <div>
+            <div style="font-family: var(--font-heading); font-weight: 900; font-size: 1.2rem;">Data Analyst Track</div>
+            <div class="text-muted" style="font-size: 0.85rem;">8 Modul • Mulai dari dasar sampai Machine Learning</div>
+          </div>
+          <div style="margin-left: auto; display: flex; align-items: center; gap: 1.5rem;">
+            <div class="track-progress-stat">
+              <span class="track-progress-number" id="completed-count">0</span>
+              <span class="track-progress-label">Selesai</span>
+            </div>
+            <div class="track-divider"></div>
+            <div class="track-progress-stat">
+              <span class="track-progress-number">8</span>
+              <span class="track-progress-label">Total</span>
+            </div>
+          </div>
+        </div>
+        <!-- Progress bar -->
+        <div style="margin-top: 1rem;">
+          <div class="xp-bar-container" style="height: 12px;">
+            <div class="xp-bar-fill" id="track-progress-bar" style="width: 0%; background: linear-gradient(90deg, var(--success), #34D399);"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Milestone Map -->
+      <div class="milestone-map" id="milestone-map">
+        <!-- Nodes rendered by JS -->
+      </div>
+
+      <!-- Track Completion Banner (hidden by default) -->
+      <div id="completion-banner" class="hidden">
+        <div class="neo-card-static neo-card-mint" style="text-align: center; padding: 2.5rem;">
+          <div class="completion-emoji">🎉</div>
+          <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Track Selesai!</h2>
+          <p class="text-muted" style="margin-bottom: 1rem;">Kamu sudah menyelesaikan semua modul Data Analyst Track. Luar biasa!</p>
+          <a href="career.html" class="neo-btn neo-btn-primary neo-btn-lg">
+            <i class="fa-solid fa-robot"></i> Lihat Potensi Karirmu
+          </a>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav" id="mobile-nav"></nav>
   </div>
 
-  <!-- Main Content -->
-  <main class="flex-1 flex flex-col h-full overflow-y-auto md:pt-0 pt-16">
-    <div class="p-8 max-w-6xl mx-auto w-full">
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <!-- LESSON / QUIZ MODAL -->
+  <!-- ═══════════════════════════════════════════════════════ -->
+  <div class="modal-overlay" id="lesson-modal">
+    <div class="modal-content">
       
-      <!-- Header -->
-      <header class="flex justify-between items-end mb-10">
+      <!-- Modal Header -->
+      <div class="modal-header">
         <div>
-          <h1 class="text-3xl font-bold text-zinc-50 mb-1">Status Sistem</h1>
-          <p class="text-zinc-500 text-sm font-mono" id="greeting-text">Menyinkronkan data untuk guest_user...</p>
+          <span id="modal-icon" style="font-size: 1.5rem; margin-right: 0.5rem;"></span>
+          <span id="modal-title" style="font-family: var(--font-heading); font-weight: 900; font-size: 1.2rem;"></span>
         </div>
-        <div class="w-12 h-12 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-xl text-zinc-300 shadow-inner" id="header-avatar">
-          <i class="fa-solid fa-user-astronaut"></i>
-        </div>
-      </header>
-
-      <!-- Dashboard Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        
-        <!-- Player Stats Card -->
-        <div class="lg:col-span-2 bg-zinc-900 rounded-2xl p-6 border border-zinc-800 shadow-sm relative overflow-hidden">
-          <div class="absolute -right-10 -top-10 text-zinc-800/30">
-            <i class="fa-solid fa-shield-halved text-9xl"></i>
-          </div>
-          
-          <div class="relative z-10">
-            <h2 class="text-lg font-medium text-zinc-100 mb-6 flex items-center gap-2">
-              <i class="fa-solid fa-bolt text-emerald-400"></i> XP & Level
-            </h2>
-            
-            <div class="flex items-center gap-6 mb-8">
-              <div class="text-center">
-                <span class="block text-xs font-mono text-zinc-500 uppercase mb-1">Level Saat Ini</span>
-                <span class="text-5xl font-extrabold text-zinc-50 tracking-tighter" id="level-display">1</span>
-              </div>
-              <div class="h-12 w-px bg-zinc-800"></div>
-              <div>
-                <span class="block text-xs font-mono text-zinc-500 uppercase mb-1">Total XP</span>
-                <span class="text-2xl font-bold text-emerald-400" id="xp-display">0</span>
-              </div>
-            </div>
-
-            <div class="max-w-md">
-              <div class="flex justify-between text-xs font-mono text-zinc-400 mb-2">
-                <span>Progres Level</span>
-                <span id="xp-next-display">Butuh X XP lagi</span>
-              </div>
-              <div class="h-2 w-full bg-zinc-950 rounded-full overflow-hidden border border-zinc-800">
-                <div id="xp-progress-bar" class="h-full bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000" style="width: 0%"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="bg-zinc-900 rounded-2xl p-6 border border-zinc-800 shadow-sm flex flex-col">
-          <h2 class="text-lg font-medium text-zinc-100 mb-4">Aksi Cepat</h2>
-          <div class="space-y-3 flex-1">
-            <a href="planner.html" class="flex items-center justify-between p-4 bg-zinc-950 rounded-xl border border-zinc-800 hover:border-indigo-500/50 hover:bg-zinc-900 transition-colors group">
-              <div class="flex items-center gap-3">
-                <i class="fa-solid fa-kanban text-indigo-400"></i>
-                <span class="text-zinc-300 font-medium group-hover:text-zinc-100 transition-colors">Buka Planner</span>
-              </div>
-              <i class="fa-solid fa-arrow-right text-zinc-600 group-hover:text-indigo-400 transition-colors"></i>
-            </a>
-            <a href="focus.html" class="flex items-center justify-between p-4 bg-zinc-950 rounded-xl border border-zinc-800 hover:border-emerald-500/50 hover:bg-zinc-900 transition-colors group">
-              <div class="flex items-center gap-3">
-                <i class="fa-solid fa-stopwatch text-emerald-400"></i>
-                <span class="text-zinc-300 font-medium group-hover:text-zinc-100 transition-colors">Mulai Fokus</span>
-              </div>
-              <i class="fa-solid fa-arrow-right text-zinc-600 group-hover:text-emerald-400 transition-colors"></i>
-            </a>
-          </div>
-        </div>
+        <button class="modal-close" id="modal-close-btn" aria-label="Tutup">✕</button>
       </div>
 
-      <!-- Analytics Chart -->
-      <div class="bg-zinc-900 rounded-2xl p-6 border border-zinc-800 shadow-sm mb-10">
-        <h2 class="text-lg font-medium text-zinc-100 mb-6 flex items-center gap-2">
-          <i class="fa-solid fa-chart-area text-indigo-400"></i> Analitik Waktu Fokus
-        </h2>
-        <div class="w-full h-64 relative">
-          <canvas id="focusChart"></canvas>
-        </div>
+      <!-- Step Indicator -->
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem;">
+        <div id="step-indicator-1" style="
+          flex: 1; height: 6px;
+          background: var(--primary);
+          border-radius: var(--radius-full);
+          border: 1px solid var(--border);
+          transition: background 0.3s;
+        "></div>
+        <div id="step-indicator-2" style="
+          flex: 1; height: 6px;
+          background: var(--gray-200);
+          border-radius: var(--radius-full);
+          border: 1px solid var(--border);
+          transition: background 0.3s;
+        "></div>
       </div>
 
-      <!-- Mobile navigation links (visible only on mobile) -->
-      <div class="md:hidden grid grid-cols-2 gap-4 mb-10">
-        <a href="planner.html" class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl text-center flex flex-col items-center gap-2">
-          <i class="fa-solid fa-kanban text-zinc-400"></i>
-          <span class="text-xs text-zinc-300">Planner</span>
-        </a>
-        <a href="store.html" class="p-4 bg-zinc-900 border border-zinc-800 rounded-xl text-center flex flex-col items-center gap-2">
-          <i class="fa-solid fa-store text-zinc-400"></i>
-          <span class="text-xs text-zinc-300">Store</span>
-        </a>
-        <button onclick="AppState.logout()" class="col-span-2 p-4 bg-zinc-900 border border-zinc-800 rounded-xl text-center flex flex-col items-center gap-2 text-red-400">
-          <i class="fa-solid fa-right-from-bracket"></i>
-          <span class="text-xs">Keluar</span>
+      <!-- Step 1: Theory -->
+      <div id="step-theory">
+        <div class="neo-badge neo-badge-purple" style="margin-bottom: 1rem;">
+          <i class="fa-solid fa-book-open"></i> Materi Pembelajaran
+        </div>
+        <div class="theory-content" id="theory-content">
+          <!-- Theory HTML injected here -->
+        </div>
+        <button class="neo-btn neo-btn-primary neo-btn-block" style="margin-top: 1.5rem;" id="btn-goto-quiz">
+          Lanjut ke Quiz! 🎯
+        </button>
+      </div>
+
+      <!-- Step 2: Quiz -->
+      <div id="step-quiz" class="hidden">
+        <div class="neo-badge neo-badge-orange" style="margin-bottom: 1rem;">
+          <i class="fa-solid fa-question-circle"></i> Quiz Time!
+        </div>
+        <h3 id="quiz-question" style="font-size: 1.1rem; margin-bottom: 1.25rem; line-height: 1.4;"></h3>
+        <div id="quiz-options">
+          <!-- Options rendered by JS -->
+        </div>
+        <div id="quiz-feedback" class="hidden"></div>
+        <button id="btn-next-module" class="neo-btn neo-btn-success neo-btn-block hidden" style="margin-top: 1rem;">
+          Lanjut ke Modul Berikutnya →
         </button>
       </div>
 
     </div>
-  </main>
+  </div>
 
-  <script src="js/main.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      AppState.protectPage();
-      
-      const user = AppState.getUser();
-      
-      // Update UI
-      document.getElementById('greeting-text').textContent = `Sinkronisasi selesai. Sesi aktif untuk: ${user.username}`;
-      document.getElementById('header-avatar').innerHTML = `<i class="fa-solid ${user.avatar}"></i>`;
-      document.getElementById('level-display').textContent = user.level;
-      document.getElementById('xp-display').textContent = user.xp;
-      
-      // Progress calculation
-      const progress = AppState.getProgressPercent();
+  <!-- Script -->
+  <script type="module">
+    import { AppState, ModuleData, UI } from './js/app.js';
+
+    // Auth check
+    if (!AppState.requireAuth()) {
+      // Will redirect
+    }
+
+    let currentUser = AppState.getUser();
+    let activeModuleIndex = -1;
+
+    // Render sidebar and mobile nav
+    UI.renderSidebar('dashboard');
+    UI.renderMobileNav('dashboard');
+
+    // ── Render Milestone Map ─────────────────────────────────
+    function renderMap() {
+      currentUser = AppState.getUser();
+      const completed = currentUser.completedModules || [];
+      const mapContainer = document.getElementById('milestone-map');
+
+      // Update progress
+      document.getElementById('completed-count').textContent = completed.length;
+      const progressPercent = (completed.length / ModuleData.length) * 100;
       setTimeout(() => {
-        document.getElementById('xp-progress-bar').style.width = `${progress}%`;
-      }, 100);
+        document.getElementById('track-progress-bar').style.width = `${progressPercent}%`;
+      }, 200);
 
-      const nextLevelXP = Math.pow((user.level) * 10, 2);
-      const neededXP = nextLevelXP - user.xp;
-      document.getElementById('xp-next-display').textContent = `Butuh ${neededXP} XP ke Lvl ${user.level + 1}`;
-
-      // Initialize Chart.js
-      initChart(user.history);
-    });
-
-    function initChart(historyData) {
-      const ctx = document.getElementById('focusChart').getContext('2d');
-      
-      // Default to last 7 days if history is empty or short
-      let labels = [];
-      let dataPoints = [];
-
-      if (!historyData || historyData.length === 0) {
-        // Mock some empty labels for visually pleasing empty chart
-        const today = new Date();
-        for(let i=6; i>=0; i--) {
-          const d = new Date(today);
-          d.setDate(d.getDate() - i);
-          labels.push(d.toISOString().split('T')[0].slice(5)); // MM-DD
-          dataPoints.push(0);
-        }
-      } else {
-        // Get last 7 entries
-        const recent = historyData.slice(-7);
-        labels = recent.map(h => h.date.slice(5));
-        dataPoints = recent.map(h => h.minutes);
+      // Show completion banner if all done
+      if (completed.length >= ModuleData.length) {
+        document.getElementById('completion-banner').classList.remove('hidden');
+        document.getElementById('completion-banner').style.display = 'block';
       }
 
-      Chart.defaults.color = '#a1a1aa'; // zinc-400
-      Chart.defaults.font.family = 'Inter, sans-serif';
+      // Determine node states
+      let mapHTML = '';
+      ModuleData.forEach((mod, index) => {
+        const isCompleted = completed.includes(mod.id);
+        
+        // Module is unlocked if:
+        // - It's the first module, OR
+        // - The previous module is completed
+        const isUnlocked = index === 0 || completed.includes(ModuleData[index - 1].id);
 
-      new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: labels,
-          datasets: [{
-            label: 'Menit Fokus',
-            data: dataPoints,
-            borderColor: '#818cf8', // indigo-400
-            backgroundColor: 'rgba(129, 140, 248, 0.1)',
-            borderWidth: 2,
-            tension: 0.4,
-            fill: true,
-            pointBackgroundColor: '#818cf8',
-            pointBorderColor: '#18181b', // zinc-900
-            pointBorderWidth: 2,
-            pointRadius: 4,
-            pointHoverRadius: 6
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: '#27272a',
-              titleColor: '#f4f4f5',
-              bodyColor: '#e4e4e7',
-              borderColor: '#3f3f46',
-              borderWidth: 1,
-              padding: 10,
-              displayColors: false,
-              callbacks: {
-                label: function(context) {
-                  return context.parsed.y + ' Menit';
-                }
-              }
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              grid: { color: '#27272a', drawBorder: false }, // zinc-800
-              ticks: { padding: 10, stepSize: 25 }
-            },
-            x: {
-              grid: { display: false, drawBorder: false },
-              ticks: { padding: 10 }
-            }
-          }
+        let stateClass = 'node-locked';
+        let statusLabel = '🔒 Terkunci';
+        let statusBg = '';
+
+        if (isCompleted) {
+          stateClass = 'node-completed';
+          statusLabel = '✅ Selesai';
+        } else if (isUnlocked) {
+          stateClass = 'node-unlocked';
+          statusLabel = '▶ Mulai!';
         }
+
+        mapHTML += `
+          <div class="milestone-node ${stateClass}" data-index="${index}" id="node-${index}">
+            <div class="node-circle">
+              ${isCompleted ? '<i class="fa-solid fa-check" style="font-size: 1.5rem;"></i>' : mod.icon}
+            </div>
+            <div class="node-info">
+              <div class="node-title">${mod.title}</div>
+              <div class="node-desc">${mod.description}</div>
+              <span class="node-status-label">${statusLabel}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      mapContainer.innerHTML = mapHTML;
+
+      // Attach click events
+      mapContainer.querySelectorAll('.milestone-node:not(.node-locked)').forEach(node => {
+        node.addEventListener('click', (e) => {
+          const index = parseInt(node.dataset.index);
+          openLesson(index);
+        });
+      });
+
+      // Attach locked node click feedback
+      mapContainer.querySelectorAll('.milestone-node.node-locked').forEach(node => {
+        node.addEventListener('click', () => {
+          UI.showToast('Selesaikan modul sebelumnya terlebih dahulu! 🔒', 'info');
+        });
       });
     }
+
+    // ── Open Lesson Modal ────────────────────────────────────
+    function openLesson(index) {
+      activeModuleIndex = index;
+      const mod = ModuleData[index];
+      if (!mod) return;
+
+      const modal = document.getElementById('lesson-modal');
+      const stepTheory = document.getElementById('step-theory');
+      const stepQuiz = document.getElementById('step-quiz');
+
+      // Reset to theory step
+      stepTheory.classList.remove('hidden');
+      stepTheory.style.display = 'block';
+      stepQuiz.classList.add('hidden');
+      stepQuiz.style.display = 'none';
+      document.getElementById('quiz-feedback').classList.add('hidden');
+      document.getElementById('btn-next-module').classList.add('hidden');
+      document.getElementById('btn-next-module').style.display = 'none';
+
+      // Step indicators
+      document.getElementById('step-indicator-1').style.background = 'var(--primary)';
+      document.getElementById('step-indicator-2').style.background = 'var(--gray-200)';
+
+      // Set content
+      document.getElementById('modal-icon').textContent = mod.icon;
+      document.getElementById('modal-title').textContent = mod.title;
+      document.getElementById('theory-content').innerHTML = mod.theory;
+
+      // Show modal
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    // ── Close Modal ──────────────────────────────────────────
+    function closeModal() {
+      const modal = document.getElementById('lesson-modal');
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+      activeModuleIndex = -1;
+    }
+
+    document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+    document.getElementById('lesson-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // ── Go to Quiz Step ──────────────────────────────────────
+    document.getElementById('btn-goto-quiz').addEventListener('click', () => {
+      const mod = ModuleData[activeModuleIndex];
+      if (!mod) return;
+
+      // Switch to quiz step
+      document.getElementById('step-theory').classList.add('hidden');
+      document.getElementById('step-theory').style.display = 'none';
+      document.getElementById('step-quiz').classList.remove('hidden');
+      document.getElementById('step-quiz').style.display = 'block';
+
+      // Update step indicators
+      document.getElementById('step-indicator-1').style.background = 'var(--success)';
+      document.getElementById('step-indicator-2').style.background = 'var(--primary)';
+
+      // Render quiz
+      renderQuiz(mod);
+    });
+
+    // ── Render Quiz ──────────────────────────────────────────
+    function renderQuiz(mod) {
+      const quiz = mod.quiz;
+      document.getElementById('quiz-question').textContent = quiz.question;
+
+      const optionsContainer = document.getElementById('quiz-options');
+      const feedbackDiv = document.getElementById('quiz-feedback');
+      const nextBtn = document.getElementById('btn-next-module');
+
+      feedbackDiv.classList.add('hidden');
+      feedbackDiv.style.display = 'none';
+      nextBtn.classList.add('hidden');
+      nextBtn.style.display = 'none';
+
+      const letters = ['A', 'B', 'C', 'D'];
+
+      optionsContainer.innerHTML = quiz.options.map((opt, i) => `
+        <button class="quiz-option" data-index="${i}" id="quiz-opt-${i}">
+          <strong>${letters[i]}.</strong> ${opt}
+        </button>
+      `).join('');
+
+      // Attach click handlers
+      optionsContainer.querySelectorAll('.quiz-option').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const selectedIndex = parseInt(btn.dataset.index);
+          const isCorrect = selectedIndex === quiz.correctIndex;
+
+          // Disable all options
+          optionsContainer.querySelectorAll('.quiz-option').forEach(b => {
+            b.disabled = true;
+            b.style.pointerEvents = 'none';
+          });
+
+          if (isCorrect) {
+            btn.classList.add('correct');
+
+            // Also highlight the correct answer
+            feedbackDiv.className = 'quiz-feedback quiz-feedback-correct';
+            feedbackDiv.innerHTML = '🎉 Benar! Keren banget! +50 XP';
+            feedbackDiv.classList.remove('hidden');
+            feedbackDiv.style.display = 'block';
+
+            // Add XP
+            await AppState.addXP(50);
+
+            // Mark module complete
+            await AppState.completeModule(mod.id);
+
+            // Show XP float animation
+            const rect = btn.getBoundingClientRect();
+            UI.showXPFloat(50, rect.left + rect.width / 2, rect.top);
+
+            // Show toast
+            UI.showToast(`+50 XP! Modul "${mod.title}" selesai! ✅`, 'xp');
+
+            // Update sidebar
+            UI.renderSidebar('dashboard');
+
+            // Show next button
+            nextBtn.classList.remove('hidden');
+            nextBtn.style.display = 'flex';
+
+            // Check if this was the last module
+            const user = AppState.getUser();
+            if ((user.completedModules || []).length >= ModuleData.length) {
+              nextBtn.innerHTML = '🎉 Semua Modul Selesai! Lihat Hasilnya';
+              nextBtn.onclick = () => {
+                closeModal();
+                renderMap();
+              };
+            } else {
+              nextBtn.onclick = () => {
+                closeModal();
+                renderMap();
+                // Auto-open next module if available
+                const nextIndex = activeModuleIndex + 1;
+                if (nextIndex < ModuleData.length) {
+                  setTimeout(() => openLesson(nextIndex), 400);
+                }
+              };
+            }
+
+          } else {
+            btn.classList.add('wrong');
+
+            // Show correct answer
+            const correctBtn = optionsContainer.querySelector(`[data-index="${quiz.correctIndex}"]`);
+            if (correctBtn) correctBtn.classList.add('correct');
+
+            feedbackDiv.className = 'quiz-feedback quiz-feedback-wrong';
+            feedbackDiv.innerHTML = `😢 Coba Lagi! Jawaban yang benar: <strong>${letters[quiz.correctIndex]}. ${quiz.options[quiz.correctIndex]}</strong>`;
+            feedbackDiv.classList.remove('hidden');
+            feedbackDiv.style.display = 'block';
+
+            // Record weakness
+            await AppState.recordWeakness(quiz.topic);
+
+            // Show retry button after a delay
+            setTimeout(() => {
+              // Re-enable options for retry
+              optionsContainer.querySelectorAll('.quiz-option').forEach(b => {
+                b.disabled = false;
+                b.style.pointerEvents = 'auto';
+                b.classList.remove('correct', 'wrong');
+              });
+              feedbackDiv.classList.add('hidden');
+              feedbackDiv.style.display = 'none';
+              UI.showToast('Coba jawab lagi! Kamu pasti bisa! 💪', 'info');
+            }, 2500);
+          }
+        });
+      });
+    }
+
+    // ── Next Module Button ───────────────────────────────────
+    // (Event handler set dynamically in quiz logic above)
+
+    // ── Initial Render ───────────────────────────────────────
+    renderMap();
   </script>
 </body>
 </html>

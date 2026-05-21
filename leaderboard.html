@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaderboard | EduVerse</title>
+  <meta name="description" content="Lihat peringkat global para explorer EduVerse. Siapa yang paling banyak mengumpulkan XP?">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="app-sidebar"></aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1 class="page-title">🏆 Leaderboard Global</h1>
+        <p class="page-subtitle">Top 10 explorer dengan XP tertinggi. Bisakah kamu masuk daftar ini?</p>
+      </div>
+
+      <!-- Leaderboard Card -->
+      <div class="neo-card-static" id="leaderboard-container">
+        
+        <!-- Loading State -->
+        <div id="leaderboard-loading" class="loading-overlay">
+          <div class="spinner spinner-lg"></div>
+          <span class="loading-text">Memuat peringkat...</span>
+        </div>
+
+        <!-- Table (hidden initially) -->
+        <div id="leaderboard-table-wrapper" class="hidden">
+          <table class="leaderboard-table" id="leaderboard-table">
+            <thead>
+              <tr>
+                <th style="width: 60px;">Rank</th>
+                <th>Explorer</th>
+                <th>Sekolah</th>
+                <th style="width: 100px;">XP</th>
+                <th style="width: 80px;">Modul</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+              <!-- Rows rendered by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Empty State -->
+        <div id="leaderboard-empty" class="hidden ai-empty-state">
+          <p style="font-size: 3rem; margin-bottom: 1rem;">🏜️</p>
+          <p style="font-family: var(--font-heading); font-weight: 800; font-size: 1.1rem; margin-bottom: 0.5rem;">Belum Ada Data</p>
+          <p>Jadilah yang pertama mengumpulkan XP dan mendominasi leaderboard!</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="leaderboard-error" class="hidden" style="
+          text-align: center;
+          padding: 2rem;
+          color: var(--danger);
+        ">
+          <p style="font-size: 3rem; margin-bottom: 1rem;">⚠️</p>
+          <p style="font-family: var(--font-heading); font-weight: 800; margin-bottom: 0.5rem;">Gagal Memuat</p>
+          <p class="text-muted" id="leaderboard-error-text">Periksa koneksi internet dan konfigurasi Firebase.</p>
+          <button class="neo-btn neo-btn-sm" style="margin-top: 1rem;" onclick="loadLeaderboard()">
+            <i class="fa-solid fa-rotate"></i> Coba Lagi
+          </button>
+        </div>
+      </div>
+
+      <!-- Current User Stats Card -->
+      <div class="neo-card-static neo-card-lavender" style="margin-top: 1.5rem;" id="user-stats-card">
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <span style="font-size: 2rem;">🧑‍🚀</span>
+          <div>
+            <div style="font-family: var(--font-heading); font-weight: 800; font-size: 1.1rem;" id="user-stats-name">—</div>
+            <div class="text-muted" style="font-size: 0.85rem;" id="user-stats-info">Selesaikan modul untuk naik peringkat!</div>
+          </div>
+          <div style="margin-left: auto; display: flex; gap: 0.5rem;">
+            <span class="neo-badge neo-badge-purple" id="user-stats-xp">⚡ 0 XP</span>
+            <span class="neo-badge neo-badge-green" id="user-stats-modules">📚 0 Modul</span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav" id="mobile-nav"></nav>
+  </div>
+
+  <!-- Script -->
+  <script type="module">
+    import { AppState, UI } from './js/app.js';
+    import { getLeaderboard, isFirebaseReady } from './js/firebase-config.js';
+
+    // Auth check
+    if (!AppState.requireAuth()) {
+      // requireAuth redirects if not logged in
+    }
+
+    const currentUser = AppState.getUser();
+
+    // Render sidebar & mobile nav
+    UI.renderSidebar('leaderboard');
+    UI.renderMobileNav('leaderboard');
+
+    // Update user stats card
+    document.getElementById('user-stats-name').textContent = currentUser.displayName || currentUser.username;
+    document.getElementById('user-stats-xp').textContent = `⚡ ${currentUser.xp || 0} XP`;
+    document.getElementById('user-stats-modules').textContent = `📚 ${(currentUser.completedModules || []).length} Modul`;
+    document.getElementById('user-stats-info').textContent = `${currentUser.school || ''} • Streak: 🔥${currentUser.streak || 1}`;
+
+    // Load leaderboard
+    window.loadLeaderboard = loadLeaderboard;
+    loadLeaderboard();
+
+    async function loadLeaderboard() {
+      const loading = document.getElementById('leaderboard-loading');
+      const tableWrapper = document.getElementById('leaderboard-table-wrapper');
+      const emptyState = document.getElementById('leaderboard-empty');
+      const errorState = document.getElementById('leaderboard-error');
+      const tbody = document.getElementById('leaderboard-body');
+
+      // Show loading
+      loading.classList.remove('hidden');
+      loading.style.display = 'flex';
+      tableWrapper.classList.add('hidden');
+      emptyState.classList.add('hidden');
+      errorState.classList.add('hidden');
+
+      if (!isFirebaseReady()) {
+        // Show local-only data
+        loading.classList.add('hidden');
+        loading.style.display = 'none';
+
+        if (currentUser) {
+          tableWrapper.classList.remove('hidden');
+          tableWrapper.style.display = 'block';
+          tbody.innerHTML = renderRow(currentUser, 1, true);
+        } else {
+          emptyState.classList.remove('hidden');
+          emptyState.style.display = 'block';
+        }
+        return;
+      }
+
+      try {
+        const users = await getLeaderboard();
+
+        loading.classList.add('hidden');
+        loading.style.display = 'none';
+
+        if (!users || users.length === 0) {
+          emptyState.classList.remove('hidden');
+          emptyState.style.display = 'block';
+          return;
+        }
+
+        // Render table
+        tableWrapper.classList.remove('hidden');
+        tableWrapper.style.display = 'block';
+
+        tbody.innerHTML = users.map((user, index) => {
+          const isCurrentUser = currentUser && (
+            user.id === currentUser.id ||
+            user.username === (currentUser.username || '').toLowerCase()
+          );
+          return renderRow(user, index + 1, isCurrentUser);
+        }).join('');
+
+      } catch (error) {
+        console.error('Leaderboard error:', error);
+        loading.classList.add('hidden');
+        loading.style.display = 'none';
+        errorState.classList.remove('hidden');
+        errorState.style.display = 'block';
+        document.getElementById('leaderboard-error-text').textContent = error.message || 'Periksa koneksi internet.';
+      }
+    }
+
+    function renderRow(user, rank, isCurrentUser) {
+      const medals = ['🥇', '🥈', '🥉'];
+      const rankDisplay = rank <= 3
+        ? `<span class="rank-medal">${medals[rank - 1]}</span>`
+        : `<span class="rank-number">#${rank}</span>`;
+
+      const modulesCount = (user.completedModules || []).length;
+      const rowClass = isCurrentUser ? 'leaderboard-row leaderboard-current' : 'leaderboard-row';
+
+      return `
+        <tr class="${rowClass}">
+          <td style="text-align: center;">${rankDisplay}</td>
+          <td>
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div style="
+                width: 38px; height: 38px;
+                background: ${isCurrentUser ? 'var(--card-lavender)' : 'var(--gray-100)'};
+                border: 2px solid var(--border);
+                border-radius: var(--radius-full);
+                display: flex; align-items: center; justify-content: center;
+                font-size: 1rem;
+              ">🧑‍🚀</div>
+              <div>
+                <div style="font-family: var(--font-heading); font-weight: 800; font-size: 0.95rem;">
+                  ${user.displayName || user.username}
+                  ${isCurrentUser ? '<span style="font-size: 0.7rem; color: var(--primary);"> (Kamu)</span>' : ''}
+                </div>
+              </div>
+            </div>
+          </td>
+          <td style="font-size: 0.85rem; color: var(--text-muted);">${user.school || '—'}</td>
+          <td>
+            <span class="neo-badge neo-badge-yellow">⚡ ${user.xp || 0}</span>
+          </td>
+          <td style="text-align: center; font-family: var(--font-heading); font-weight: 800;">
+            ${modulesCount}/8
+          </td>
+        </tr>
+      `;
+    }
+  </script>
+</body>
+</html>

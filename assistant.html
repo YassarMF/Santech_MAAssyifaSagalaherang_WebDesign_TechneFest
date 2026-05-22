@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Assistant | EduVerse</title>
+  <meta name="description" content="Chat dengan AI Assistant EduVerse. Pilih persona Mentor, Coding Assistant, atau Job Agent untuk membantu belajarmu.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="app-sidebar"></aside>
+    <main class="main-content" style="padding-bottom: 1rem;">
+
+      <!-- Page Header -->
+      <div class="page-header" style="margin-bottom: 1rem;">
+        <h1 class="page-title">🤖 AI Assistant</h1>
+        <p class="page-subtitle">Teman belajar AI personalmu — pilih persona dan mulai chat!</p>
+      </div>
+
+      <!-- Chat Container -->
+      <div class="chat-container">
+
+        <!-- Persona Selector -->
+        <div class="chat-header">
+          <div class="chat-persona-select">
+            <button class="persona-btn active" data-persona="mentor" id="persona-mentor">
+              🧠 Mentor
+            </button>
+            <button class="persona-btn" data-persona="coding" id="persona-coding">
+              💻 Coding
+            </button>
+            <button class="persona-btn" data-persona="job" id="persona-job">
+              💼 Job Agent
+            </button>
+          </div>
+          <div id="persona-description" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 500;">
+            Analisis pola belajarmu dan berikan feedback motivasi
+          </div>
+        </div>
+
+        <!-- Messages Area -->
+        <div class="chat-messages" id="chat-messages">
+          <!-- Welcome message -->
+          <div class="chat-bubble chat-bubble-ai">
+            <p>Halo! 👋 Aku adalah <strong>EduVerse Mentor</strong>.</p>
+            <p>Aku siap membantu menganalisis pola belajarmu, mengidentifikasi kekuatan dan kelemahanmu, serta memberikan feedback yang memotivasi!</p>
+            <p>Silakan ceritakan tentang progress belajarmu atau tanyakan apa saja 😊</p>
+          </div>
+        </div>
+
+        <!-- Typing Indicator (hidden by default) -->
+        <!-- Placed inside messages area dynamically -->
+
+        <!-- Input Bar -->
+        <div class="chat-input-bar">
+          <textarea class="chat-input" id="chat-input" placeholder="Ketik pesanmu di sini..." rows="1"></textarea>
+          <button class="chat-send-btn" id="chat-send-btn" aria-label="Kirim">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+
+      </div>
+
+    </main>
+    <nav class="mobile-nav" id="mobile-nav"></nav>
+  </div>
+
+  <script type="module">
+    import { AppState, UI } from './js/app.js';
+    import { isGeminiReady, chatWithPersona } from './js/gemini.js';
+
+    if (!AppState.requireAuth()) { /* redirects */ }
+
+    const currentUser = AppState.getUser();
+    UI.renderSidebar('assistant');
+    UI.renderMobileNav('assistant');
+
+    // ── State ────────────────────────────────────────────────
+    let activePersona = 'mentor';
+    let chatHistory = []; // { role: 'user'|'ai', text: string }
+    let isLoading = false;
+
+    const personaDescriptions = {
+      mentor: 'Analisis pola belajarmu dan berikan feedback motivasi',
+      coding: 'Bantu coding dengan snippet dan penjelasan sederhana',
+      job: 'Profiling skill dan cocokkan dengan peluang karir'
+    };
+
+    const personaWelcome = {
+      mentor: `<p>Halo! 👋 Aku adalah <strong>EduVerse Mentor</strong>.</p><p>Aku siap membantu menganalisis pola belajarmu, mengidentifikasi kekuatan dan kelemahanmu, serta memberikan feedback yang memotivasi!</p><p>Silakan ceritakan tentang progress belajarmu atau tanyakan apa saja 😊</p>`,
+      coding: `<p>Halo! 👋 Aku adalah <strong>EduVerse Coding Assistant</strong>.</p><p>Aku bisa membantu kamu dengan snippet kode, penjelasan konsep programming, dan debugging. Semua dijelaskan dengan bahasa yang mudah dipahami!</p><p>Mau belajar coding apa hari ini? 💻</p>`,
+      job: `<p>Halo! 👋 Aku adalah <strong>EduVerse Job Agent</strong>.</p><p>Aku bisa membantu profiling skill-mu dan mencocokkannya dengan peluang karir yang realistis. Aku juga bisa membuat simulasi lowongan kerja!</p><p>Ceritakan skill dan minatmu, yuk! 💼</p>`
+    };
+
+    // ── DOM Elements ─────────────────────────────────────────
+    const messagesContainer = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('chat-send-btn');
+    const personaDesc = document.getElementById('persona-description');
+    const personaBtns = document.querySelectorAll('.persona-btn');
+
+    // ── Persona Switching ───────────────────────────────────
+    personaBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (isLoading) return;
+        const persona = btn.dataset.persona;
+        if (persona === activePersona) return;
+
+        activePersona = persona;
+        chatHistory = [];
+
+        personaBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        personaDesc.textContent = personaDescriptions[persona];
+
+        // Reset chat with welcome message
+        messagesContainer.innerHTML = `<div class="chat-bubble chat-bubble-ai">${personaWelcome[persona]}</div>`;
+        scrollToBottom();
+      });
+    });
+
+    // ── Send Message ─────────────────────────────────────────
+    async function sendMessage() {
+      const text = chatInput.value.trim();
+      if (!text || isLoading) return;
+
+      // Check Gemini
+      if (!isGeminiReady()) {
+        UI.showToast('Gemini API key belum dikonfigurasi!', 'error');
+        return;
+      }
+
+      // Add user message
+      chatHistory.push({ role: 'user', text });
+      appendBubble(text, 'user');
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+
+      // Show typing indicator
+      isLoading = true;
+      sendBtn.disabled = true;
+      const typingEl = showTypingIndicator();
+      scrollToBottom();
+
+      try {
+        const response = await chatWithPersona(text, activePersona, chatHistory);
+        chatHistory.push({ role: 'ai', text: response });
+
+        // Remove typing indicator and add response
+        typingEl.remove();
+        appendBubble(response, 'ai');
+      } catch (error) {
+        console.error('Chat error:', error);
+        typingEl.remove();
+        appendBubble('Maaf, terjadi kesalahan. Coba lagi nanti ya! 😔', 'ai');
+        UI.showToast(error.message || 'Gagal menghubungi AI', 'error');
+      } finally {
+        isLoading = false;
+        sendBtn.disabled = false;
+        chatInput.focus();
+      }
+    }
+
+    // ── Append Chat Bubble ───────────────────────────────────
+    function appendBubble(text, role) {
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble chat-bubble-${role}`;
+
+      if (role === 'ai') {
+        // Parse markdown-like formatting
+        bubble.innerHTML = formatAIResponse(text);
+      } else {
+        bubble.textContent = text;
+      }
+
+      messagesContainer.appendChild(bubble);
+      scrollToBottom();
+    }
+
+    // ── Format AI Response ───────────────────────────────────
+    function formatAIResponse(text) {
+      // Handle code blocks
+      text = text.replace(/```(\w*)?\n([\s\S]*?)```/g, (match, lang, code) => {
+        return `<pre><code>${escapeHtml(code.trim())}</code></pre>`;
+      });
+
+      // Handle inline code
+      text = text.replace(/`([^`]+)`/g, '<code style="background: var(--card-lemon); padding: 0.1rem 0.35rem; border-radius: 4px; font-size: 0.85rem; border: 1px solid var(--border);">$1</code>');
+
+      // Handle bold
+      text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+      // Handle line breaks and paragraphs
+      text = text.split('\n\n').map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+
+      return text;
+    }
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // ── Typing Indicator ─────────────────────────────────────
+    function showTypingIndicator() {
+      const typing = document.createElement('div');
+      typing.className = 'chat-typing';
+      typing.id = 'typing-indicator';
+      typing.innerHTML = `
+        AI sedang mengetik
+        <div class="chat-typing-dots">
+          <span></span><span></span><span></span>
+        </div>
+      `;
+      messagesContainer.appendChild(typing);
+      return typing;
+    }
+
+    // ── Scroll to Bottom ─────────────────────────────────────
+    function scrollToBottom() {
+      requestAnimationFrame(() => {
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      });
+    }
+
+    // ── Event Listeners ──────────────────────────────────────
+    sendBtn.addEventListener('click', sendMessage);
+    chatInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Auto-resize textarea
+    chatInput.addEventListener('input', () => {
+      chatInput.style.height = 'auto';
+      chatInput.style.height = Math.min(chatInput.scrollHeight, 120) + 'px';
+    });
+  </script>
+</body>
+</html>

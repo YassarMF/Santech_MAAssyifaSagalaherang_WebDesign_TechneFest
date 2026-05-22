@@ -542,9 +542,11 @@ export const UI = {
       : 0;
 
     const navItems = [
-      { id: 'dashboard', href: 'dashboard.html', icon: 'fa-map', label: 'Learning Path' },
-      { id: 'leaderboard', href: 'leaderboard.html', icon: 'fa-trophy', label: 'Leaderboard' },
-      { id: 'career', href: 'career.html', icon: 'fa-robot', label: 'AI Center' }
+      { id: 'dashboard', href: 'dashboard.html', icon: 'fa-compass', label: 'Dashboard' },
+      { id: 'course', href: 'course.html', icon: 'fa-map', label: 'Materi Belajar' },
+      { id: 'career', href: 'career.html', icon: 'fa-briefcase', label: 'Career Tracks' },
+      { id: 'assistant', href: 'assistant.html', icon: 'fa-robot', label: 'AI Assistant' },
+      { id: 'leaderboard', href: 'leaderboard.html', icon: 'fa-trophy', label: 'Leaderboard' }
     ];
 
     sidebar.innerHTML = `
@@ -613,9 +615,11 @@ export const UI = {
     if (!nav) return;
 
     const items = [
-      { id: 'dashboard', href: 'dashboard.html', icon: 'fa-map', label: 'Path' },
-      { id: 'leaderboard', href: 'leaderboard.html', icon: 'fa-trophy', label: 'Rank' },
-      { id: 'career', href: 'career.html', icon: 'fa-robot', label: 'AI' }
+      { id: 'dashboard', href: 'dashboard.html', icon: 'fa-compass', label: 'Home' },
+      { id: 'course', href: 'course.html', icon: 'fa-map', label: 'Belajar' },
+      { id: 'career', href: 'career.html', icon: 'fa-briefcase', label: 'Karir' },
+      { id: 'assistant', href: 'assistant.html', icon: 'fa-robot', label: 'AI' },
+      { id: 'leaderboard', href: 'leaderboard.html', icon: 'fa-trophy', label: 'Rank' }
     ];
 
     nav.innerHTML = `

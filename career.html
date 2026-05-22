@@ -3,332 +3,243 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Center | EduVerse</title>
-  <meta name="description" content="Analisis kelemahan belajar dan prediksi karir masa depanmu dengan AI Gemini di EduVerse.">
-
-  <!-- Styles -->
+  <title>Career Tracks | EduVerse</title>
+  <meta name="description" content="Jelajahi jalur karir teknologi. Lihat skill yang dibutuhkan dan cari lowongan kerja dengan AI Agent.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="css/main.css">
-
-  <style>
-    .ai-card-header {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      margin-bottom: 1.25rem;
-    }
-    .ai-card-icon {
-      width: 48px;
-      height: 48px;
-      border: var(--border-w) solid var(--border);
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      box-shadow: var(--shadow-sm);
-      flex-shrink: 0;
-    }
-    .ai-card-title {
-      font-family: var(--font-heading);
-      font-weight: 900;
-      font-size: 1.15rem;
-    }
-    .ai-card-desc {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      margin-top: 0.15rem;
-    }
-    .ai-data-preview {
-      background: var(--bg-page);
-      border: 2px solid var(--gray-200);
-      border-radius: var(--radius-sm);
-      padding: 0.75rem 1rem;
-      margin-bottom: 1rem;
-      font-size: 0.85rem;
-    }
-    .ai-data-preview-title {
-      font-family: var(--font-heading);
-      font-weight: 800;
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.35rem;
-    }
-    .ai-tag {
-      display: inline-block;
-      padding: 0.2rem 0.6rem;
-      font-size: 0.78rem;
-      font-weight: 700;
-      border-radius: var(--radius-full);
-      border: 2px solid var(--border);
-      margin: 0.15rem;
-    }
-    .api-notice {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      padding: 1rem 1.25rem;
-      background: var(--card-lemon);
-      border: 2px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 0.85rem;
-      line-height: 1.5;
-      margin-bottom: 2rem;
-    }
-    .api-notice-icon {
-      font-size: 1.25rem;
-      flex-shrink: 0;
-      margin-top: 0.1rem;
-    }
-  </style>
 </head>
 <body>
   <div class="app-layout">
-
-    <!-- Sidebar -->
     <aside class="sidebar" id="app-sidebar"></aside>
-
-    <!-- Main Content -->
     <main class="main-content">
 
       <!-- Page Header -->
       <div class="page-header">
-        <h1 class="page-title">🤖 AI Center</h1>
-        <p class="page-subtitle">Analisis kelemahan belajar dan prediksi karir masa depanmu dengan Gemini AI.</p>
+        <h1 class="page-title">💼 Career Tracks</h1>
+        <p class="page-subtitle">Jelajahi jalur karir teknologi dan temukan peluangmu!</p>
       </div>
 
-      <!-- API Key Notice -->
-      <div class="api-notice" id="api-notice">
-        <span class="api-notice-icon">💡</span>
-        <div>
-          <strong>Gemini API Key diperlukan.</strong> 
-          Buka file <code style="background: var(--white); padding: 0.1rem 0.3rem; border-radius: 4px; border: 1px solid var(--border);">js/gemini.js</code> dan paste API key kamu. 
-          Dapatkan key gratis di <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color: var(--primary); font-weight: 700; text-decoration: underline;">Google AI Studio</a>.
+      <!-- API Key Warning -->
+      <div id="api-key-notice" class="hidden" style="margin-bottom: 1.5rem;">
+        <div class="neo-card-static neo-card-lemon" style="padding: 1rem 1.5rem;">
+          <p style="font-family: var(--font-heading); font-weight: 800; font-size: 0.9rem;">⚠️ Gemini API key belum dikonfigurasi. Fitur AI Agent tidak akan berfungsi.</p>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Buka <code style="background: var(--card-lemon); padding: 0.1rem 0.3rem; border-radius: 4px;">js/gemini.js</code> dan masukkan API key-mu.</p>
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════════════════ -->
-      <!-- Section 1: Analisis Kelemahan -->
-      <!-- ═══════════════════════════════════════════════════ -->
-      <div class="ai-section">
-        <div class="neo-card-static neo-card-pink" id="weakness-card">
-          <div class="ai-card-header">
-            <div class="ai-card-icon" style="background: var(--card-pink);">🔍</div>
-            <div>
-              <div class="ai-card-title">Analisis Kelemahan Belajar</div>
-              <div class="ai-card-desc">AI akan menganalisis topik yang sering salah dan memberikan saran belajar.</div>
-            </div>
-          </div>
-
-          <!-- Data Preview -->
-          <div class="ai-data-preview" id="weakness-data-preview">
-            <div class="ai-data-preview-title">📋 Data Kelemahanmu</div>
-            <div id="weakness-tags">
-              <!-- Tags rendered by JS -->
-            </div>
-          </div>
-
-          <!-- Action Button -->
-          <button class="neo-btn neo-btn-primary neo-btn-block" id="btn-analyze-weakness">
-            <span id="btn-weakness-text"><i class="fa-solid fa-magnifying-glass-chart"></i> Analisis Saya</span>
-            <span id="btn-weakness-spinner" class="hidden"><span class="spinner" style="border-color: white; border-top-color: transparent;"></span> Menganalisis...</span>
-          </button>
-
-          <!-- Result -->
-          <div id="weakness-result" class="hidden">
-            <div class="ai-result-box" id="weakness-result-text"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ═══════════════════════════════════════════════════ -->
-      <!-- Section 2: Prospek Karir -->
-      <!-- ═══════════════════════════════════════════════════ -->
-      <div class="ai-section">
-        <div class="neo-card-static neo-card-sky" id="career-card">
-          <div class="ai-card-header">
-            <div class="ai-card-icon" style="background: var(--card-sky);">🚀</div>
-            <div>
-              <div class="ai-card-title">Prospek Karir Masa Depan</div>
-              <div class="ai-card-desc">AI akan memprediksi posisi pekerjaan yang cocok berdasarkan modul yang sudah kamu selesaikan.</div>
-            </div>
-          </div>
-
-          <!-- Data Preview -->
-          <div class="ai-data-preview" id="career-data-preview">
-            <div class="ai-data-preview-title">📚 Modul yang Diselesaikan</div>
-            <div id="career-modules-tags">
-              <!-- Tags rendered by JS -->
-            </div>
-          </div>
-
-          <!-- Action Button -->
-          <button class="neo-btn neo-btn-success neo-btn-block" id="btn-predict-career">
-            <span id="btn-career-text"><i class="fa-solid fa-briefcase"></i> Lihat Potensi Karir</span>
-            <span id="btn-career-spinner" class="hidden"><span class="spinner" style="border-color: white; border-top-color: transparent;"></span> Memprediksi...</span>
-          </button>
-
-          <!-- Result -->
-          <div id="career-result" class="hidden">
-            <div class="ai-result-box" id="career-result-text"></div>
-          </div>
-        </div>
+      <!-- Career Cards Grid -->
+      <div class="career-grid" id="career-grid">
+        <!-- Rendered by JS -->
       </div>
 
     </main>
-
-    <!-- Mobile Navigation -->
     <nav class="mobile-nav" id="mobile-nav"></nav>
   </div>
 
-  <!-- Script -->
-  <script type="module">
-    import { AppState, ModuleData, getModuleMap, UI } from './js/app.js';
-    import { analyzeWeaknesses, predictCareer, isGeminiReady } from './js/gemini.js';
+  <!-- Job Listings Modal -->
+  <div class="modal-overlay" id="job-modal">
+    <div class="modal-content" style="max-width: 640px;">
+      <div class="modal-header">
+        <div>
+          <span id="job-modal-emoji" style="font-size: 1.5rem; margin-right: 0.5rem;"></span>
+          <span id="job-modal-title" style="font-family: var(--font-heading); font-weight: 900; font-size: 1.2rem;"></span>
+        </div>
+        <button class="modal-close" id="job-modal-close" aria-label="Tutup">✕</button>
+      </div>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Lowongan kerja simulasi yang dihasilkan AI berdasarkan jalur karir ini:</p>
+      <div id="job-listings-container">
+        <!-- Job cards rendered by JS or loading skeleton -->
+        <div class="loading-overlay" id="job-loading">
+          <div class="spinner spinner-lg"></div>
+          <span class="loading-text">AI Agent sedang mencari lowongan...</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    // Auth check
-    if (!AppState.requireAuth()) {
-      // Will redirect
-    }
+  <script type="module">
+    import { AppState, ModuleData, UI } from './js/app.js';
+    import { isGeminiReady, generateJobListings } from './js/gemini.js';
+
+    if (!AppState.requireAuth()) { /* redirects */ }
 
     const currentUser = AppState.getUser();
-    const moduleMap = getModuleMap();
-
-    // Render sidebar & mobile nav
     UI.renderSidebar('career');
     UI.renderMobileNav('career');
 
-    // Hide API notice if key is configured
-    if (isGeminiReady()) {
-      document.getElementById('api-notice').style.display = 'none';
+    // Show API key notice if needed
+    if (!isGeminiReady()) {
+      document.getElementById('api-key-notice').classList.remove('hidden');
+      document.getElementById('api-key-notice').style.display = 'block';
     }
 
-    // ── Render Weakness Tags ─────────────────────────────────
-    function renderWeaknessTags() {
-      const weaknesses = currentUser.weaknesses || [];
-      const container = document.getElementById('weakness-tags');
-
-      if (weaknesses.length === 0) {
-        container.innerHTML = '<span class="text-muted" style="font-size: 0.85rem; font-style: italic;">Belum ada data. Selesaikan beberapa quiz terlebih dahulu! 💪</span>';
-        return;
+    // Career tracks data
+    const careerTracks = [
+      {
+        emoji: '📊',
+        title: 'Data Analyst',
+        color: 'var(--card-sky)',
+        description: 'Menganalisis data bisnis untuk mengambil keputusan strategis. Cocok untuk kamu yang suka angka dan pola!',
+        skills: ['Excel', 'SQL', 'Python', 'Statistik', 'Visualisasi Data', 'Machine Learning'],
+        salary: 'Rp 7 — 18 juta/bulan',
+        relatedModules: ['mod_01_intro', 'mod_02_excel', 'mod_03_stats', 'mod_04_sql', 'mod_05_dataviz', 'mod_06_python']
+      },
+      {
+        emoji: '🖥️',
+        title: 'Software Engineer',
+        color: 'var(--card-lavender)',
+        description: 'Membangun aplikasi dan sistem software. Dari web app hingga mobile, semua dimulai dari sini!',
+        skills: ['JavaScript', 'Python', 'Git', 'API Design', 'Database', 'Problem Solving'],
+        salary: 'Rp 10 — 30 juta/bulan',
+        relatedModules: ['mod_04_sql', 'mod_06_python']
+      },
+      {
+        emoji: '🧠',
+        title: 'Data Scientist',
+        color: 'var(--card-mint)',
+        description: 'Menggali insight dari data menggunakan statistik dan machine learning. The sexiest job of the 21st century!',
+        skills: ['Python', 'Statistik', 'Machine Learning', 'Deep Learning', 'SQL', 'Matematika'],
+        salary: 'Rp 12 — 35 juta/bulan',
+        relatedModules: ['mod_03_stats', 'mod_06_python', 'mod_07_advanced', 'mod_08_ml_intro']
+      },
+      {
+        emoji: '🔌',
+        title: 'IoT Engineer',
+        color: 'var(--card-peach)',
+        description: 'Menghubungkan perangkat fisik ke internet. Smart home, wearables, dan industri 4.0 menantimu!',
+        skills: ['C/C++', 'Python', 'Networking', 'Embedded Systems', 'Cloud', 'Data Analytics'],
+        salary: 'Rp 8 — 22 juta/bulan',
+        relatedModules: ['mod_06_python', 'mod_07_advanced']
       }
+    ];
 
-      // Deduplicate
-      const unique = [...new Set(weaknesses)];
-      container.innerHTML = unique.map(w => 
-        `<span class="ai-tag" style="background: var(--card-pink);">${w}</span>`
-      ).join('');
-    }
-
-    // ── Render Completed Module Tags ─────────────────────────
-    function renderModuleTags() {
+    function renderCareerCards() {
+      const grid = document.getElementById('career-grid');
       const completed = currentUser.completedModules || [];
-      const container = document.getElementById('career-modules-tags');
 
-      if (completed.length === 0) {
-        container.innerHTML = '<span class="text-muted" style="font-size: 0.85rem; font-style: italic;">Belum ada modul yang diselesaikan. Mulai belajar di Learning Path! 📚</span>';
-        return;
-      }
+      grid.innerHTML = careerTracks.map((track, idx) => {
+        const matchCount = track.relatedModules.filter(m => completed.includes(m)).length;
+        const totalRelated = track.relatedModules.length;
+        const matchPercent = totalRelated > 0 ? Math.round((matchCount / totalRelated) * 100) : 0;
 
-      container.innerHTML = completed.map(id => {
-        const title = moduleMap[id] || id;
-        return `<span class="ai-tag" style="background: var(--card-mint);">✅ ${title}</span>`;
+        return `
+          <div class="career-card" id="career-card-${idx}">
+            <div style="height: 12px; background: ${track.color}; border-bottom: var(--border-w) solid var(--border);"></div>
+            <div class="career-card-body">
+              <div class="career-card-emoji">${track.emoji}</div>
+              <h3 class="career-card-title">${track.title}</h3>
+              <p class="career-card-desc">${track.description}</p>
+              
+              <div class="career-skills">
+                ${track.skills.map(s => `<span class="career-skill-tag">${s}</span>`).join('')}
+              </div>
+
+              <div class="career-salary"><i class="fa-solid fa-coins"></i> ${track.salary}</div>
+
+              <!-- Skill Match Progress -->
+              <div style="margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                  <span style="font-family: var(--font-heading); font-weight: 700; font-size: 0.72rem; color: var(--text-muted);">Skill Match</span>
+                  <span style="font-family: var(--font-heading); font-weight: 800; font-size: 0.72rem; color: var(--primary);">${matchCount}/${totalRelated} modul</span>
+                </div>
+                <div class="xp-bar-container" style="height: 8px;">
+                  <div class="xp-bar-fill" style="width: ${matchPercent}%; transition: width 0.6s ease;"></div>
+                </div>
+              </div>
+
+              <div class="career-card-footer">
+                <button class="neo-btn neo-btn-primary neo-btn-block neo-btn-sm" onclick="openJobSearch(${idx})" id="job-search-btn-${idx}">
+                  <i class="fa-solid fa-magnifying-glass"></i> Cari Lowongan Serupa (AI Agent)
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
       }).join('');
     }
 
-    // ── Analyze Weaknesses ───────────────────────────────────
-    document.getElementById('btn-analyze-weakness').addEventListener('click', async () => {
-      const btn = document.getElementById('btn-analyze-weakness');
-      const btnText = document.getElementById('btn-weakness-text');
-      const btnSpinner = document.getElementById('btn-weakness-spinner');
-      const resultDiv = document.getElementById('weakness-result');
-      const resultText = document.getElementById('weakness-result-text');
+    // ── Job Search Modal ─────────────────────────────────────
+    window.openJobSearch = async function(trackIndex) {
+      const track = careerTracks[trackIndex];
+      if (!track) return;
 
-      // Check API key
+      const modal = document.getElementById('job-modal');
+      document.getElementById('job-modal-emoji').textContent = track.emoji;
+      document.getElementById('job-modal-title').textContent = `Lowongan ${track.title}`;
+
+      const container = document.getElementById('job-listings-container');
+      const loading = document.getElementById('job-loading');
+
+      // Show modal with loading
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      loading.classList.remove('hidden');
+      loading.style.display = 'flex';
+      container.innerHTML = '';
+      container.appendChild(loading);
+
       if (!isGeminiReady()) {
-        UI.showToast('Gemini API key belum dikonfigurasi! Buka js/gemini.js', 'error');
+        loading.style.display = 'none';
+        container.innerHTML = `
+          <div class="ai-empty-state">
+            <p style="font-size: 2rem; margin-bottom: 0.5rem;">🔑</p>
+            <p style="font-family: var(--font-heading); font-weight: 800;">API Key Belum Dikonfigurasi</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Masukkan Gemini API key di js/gemini.js untuk menggunakan fitur ini.</p>
+          </div>
+        `;
         return;
       }
 
-      const weaknesses = currentUser.weaknesses || [];
-
-      // Show loading
-      btn.disabled = true;
-      btnText.classList.add('hidden');
-      btnText.style.display = 'none';
-      btnSpinner.classList.remove('hidden');
-      btnSpinner.style.display = 'inline-flex';
-
       try {
-        const result = await analyzeWeaknesses(weaknesses);
-        resultText.textContent = result;
-        resultDiv.classList.remove('hidden');
-        resultDiv.style.display = 'block';
-        UI.showToast('Analisis selesai! 🎯', 'success');
+        const result = await generateJobListings(track.title, track.skills);
+        loading.style.display = 'none';
+
+        // Parse and display
+        container.innerHTML = `
+          <div class="job-listings">
+            <div class="ai-result-box" style="white-space: pre-wrap; line-height: 1.7; font-size: 0.92rem;">${formatJobResult(result)}</div>
+          </div>
+        `;
       } catch (error) {
-        console.error('Weakness analysis error:', error);
-        resultText.textContent = `❌ Error: ${error.message}`;
-        resultDiv.classList.remove('hidden');
-        resultDiv.style.display = 'block';
-        UI.showToast('Gagal menganalisis. Coba lagi.', 'error');
-      } finally {
-        btn.disabled = false;
-        btnText.classList.remove('hidden');
-        btnText.style.display = 'inline-flex';
-        btnSpinner.classList.add('hidden');
-        btnSpinner.style.display = 'none';
+        console.error('Job search error:', error);
+        loading.style.display = 'none';
+        container.innerHTML = `
+          <div class="ai-empty-state">
+            <p style="font-size: 2rem; margin-bottom: 0.5rem;">😔</p>
+            <p style="font-family: var(--font-heading); font-weight: 800;">Gagal Memuat Lowongan</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">${error.message || 'Terjadi kesalahan. Coba lagi nanti.'}</p>
+          </div>
+        `;
+      }
+    };
+
+    function formatJobResult(text) {
+      // Basic formatting
+      text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      text = text.replace(/\n/g, '<br>');
+      return text;
+    }
+
+    // Close modal
+    document.getElementById('job-modal-close').addEventListener('click', () => {
+      document.getElementById('job-modal').classList.remove('active');
+      document.body.style.overflow = '';
+    });
+    document.getElementById('job-modal').addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) {
+        document.getElementById('job-modal').classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        document.getElementById('job-modal').classList.remove('active');
+        document.body.style.overflow = '';
       }
     });
 
-    // ── Predict Career ───────────────────────────────────────
-    document.getElementById('btn-predict-career').addEventListener('click', async () => {
-      const btn = document.getElementById('btn-predict-career');
-      const btnText = document.getElementById('btn-career-text');
-      const btnSpinner = document.getElementById('btn-career-spinner');
-      const resultDiv = document.getElementById('career-result');
-      const resultText = document.getElementById('career-result-text');
-
-      // Check API key
-      if (!isGeminiReady()) {
-        UI.showToast('Gemini API key belum dikonfigurasi! Buka js/gemini.js', 'error');
-        return;
-      }
-
-      const completedModules = currentUser.completedModules || [];
-
-      // Show loading
-      btn.disabled = true;
-      btnText.classList.add('hidden');
-      btnText.style.display = 'none';
-      btnSpinner.classList.remove('hidden');
-      btnSpinner.style.display = 'inline-flex';
-
-      try {
-        const result = await predictCareer(completedModules, moduleMap);
-        resultText.textContent = result;
-        resultDiv.classList.remove('hidden');
-        resultDiv.style.display = 'block';
-        UI.showToast('Prediksi karir selesai! 🚀', 'success');
-      } catch (error) {
-        console.error('Career prediction error:', error);
-        resultText.textContent = `❌ Error: ${error.message}`;
-        resultDiv.classList.remove('hidden');
-        resultDiv.style.display = 'block';
-        UI.showToast('Gagal memprediksi. Coba lagi.', 'error');
-      } finally {
-        btn.disabled = false;
-        btnText.classList.remove('hidden');
-        btnText.style.display = 'inline-flex';
-        btnSpinner.classList.add('hidden');
-        btnSpinner.style.display = 'none';
-      }
-    });
-
-    // ── Initial Render ───────────────────────────────────────
-    renderWeaknessTags();
-    renderModuleTags();
+    // Render
+    renderCareerCards();
   </script>
 </body>
 </html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Materi Belajar | EduVerse</title>
+  <meta name="description" content="Ikuti syllabus interaktif Data Analyst Track. Selesaikan modul demi modul dan kuasai skill analisis data!">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+  <div class="app-layout">
+    <aside class="sidebar" id="app-sidebar"></aside>
+    <main class="main-content">
+
+      <!-- Page Header -->
+      <header class="page-header">
+        <h1 class="page-title">📚 Materi Belajar (Katalog)</h1>
+        <p class="page-subtitle">Jelajahi semua track pembelajaran yang tersedia di EduVerse. Mulai dari web development hingga data science!</p>
+      </header>
+
+      <!-- Tracks Container -->
+      <div id="tracks-container">
+        <!-- Rendered by JS -->
+      </div>
+
+    </main>
+    <nav class="mobile-nav" id="mobile-nav"></nav>
+  </div>
+
+  <script type="module">
+    import { AppState, UI } from '../assets/js/core/app.js?v=3';
+    import { renderTracksList } from '../assets/js/data/tracks-data.js?v=3';
+
+    if (!AppState.requireAuth()) { /* redirects */ }
+
+    UI.renderSidebar('course');
+    UI.renderMobileNav('course');
+
+    renderTracksList('tracks-container');
+  </script>
+</body>
+</html>

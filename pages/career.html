@@ -6,7 +6,7 @@
   <title>Career Tracks | EduVerse</title>
   <meta name="description" content="Jelajahi jalur karir teknologi. Lihat skill yang dibutuhkan dan cari lowongan kerja dengan AI Agent.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
   <div class="app-layout">
@@ -14,16 +14,16 @@
     <main class="main-content">
 
       <!-- Page Header -->
-      <div class="page-header">
+      <header class="page-header">
         <h1 class="page-title">💼 Career Tracks</h1>
-        <p class="page-subtitle">Jelajahi jalur karir teknologi dan temukan peluangmu!</p>
-      </div>
+        <p class="page-subtitle">Pilih jalur karir impianmu dan capai targetnya.</p>
+      </header>
 
       <!-- API Key Warning -->
       <div id="api-key-notice" class="hidden" style="margin-bottom: 1.5rem;">
         <div class="neo-card-static neo-card-lemon" style="padding: 1rem 1.5rem;">
           <p style="font-family: var(--font-heading); font-weight: 800; font-size: 0.9rem;">⚠️ Gemini API key belum dikonfigurasi. Fitur AI Agent tidak akan berfungsi.</p>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Buka <code style="background: var(--card-lemon); padding: 0.1rem 0.3rem; border-radius: 4px;">js/gemini.js</code> dan masukkan API key-mu.</p>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Buka <code style="background: var(--card-lemon); padding: 0.1rem 0.3rem; border-radius: 4px;">assets/js/services/gemini.js</code> dan masukkan API key-mu.</p>
         </div>
       </div>
 
@@ -37,7 +37,7 @@
   </div>
 
   <!-- Job Listings Modal -->
-  <div class="modal-overlay" id="job-modal">
+  <div class="modal-overlay" id="job-modal" role="dialog" aria-modal="true" aria-labelledby="job-modal-title">
     <div class="modal-content" style="max-width: 640px;">
       <div class="modal-header">
         <div>
@@ -58,8 +58,8 @@
   </div>
 
   <script type="module">
-    import { AppState, ModuleData, UI } from './js/app.js';
-    import { isGeminiReady, generateJobListings } from './js/gemini.js';
+    import { AppState, ModuleData, UI } from '../assets/js/core/app.js';
+    import { isGeminiReady, generateJobListings } from '../assets/js/services/gemini.js';
 
     if (!AppState.requireAuth()) { /* redirects */ }
 
@@ -184,7 +184,7 @@
           <div class="ai-empty-state">
             <p style="font-size: 2rem; margin-bottom: 0.5rem;">🔑</p>
             <p style="font-family: var(--font-heading); font-weight: 800;">API Key Belum Dikonfigurasi</p>
-            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Masukkan Gemini API key di js/gemini.js untuk menggunakan fitur ini.</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.5rem;">Masukkan Gemini API key di assets/js/services/gemini.js untuk menggunakan fitur ini.</p>
           </div>
         `;
         return;

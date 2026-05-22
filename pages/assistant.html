@@ -6,7 +6,7 @@
   <title>AI Assistant | EduVerse</title>
   <meta name="description" content="Chat dengan AI Assistant EduVerse. Pilih persona Mentor, Coding Assistant, atau Job Agent untuk membantu belajarmu.">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
   <div class="app-layout">
@@ -14,10 +14,10 @@
     <main class="main-content" style="padding-bottom: 1rem;">
 
       <!-- Page Header -->
-      <div class="page-header" style="margin-bottom: 1rem;">
+      <header class="page-header" style="margin-bottom: 1rem;">
         <h1 class="page-title">🤖 AI Assistant</h1>
         <p class="page-subtitle">Teman belajar AI personalmu — pilih persona dan mulai chat!</p>
-      </div>
+      </header>
 
       <!-- Chat Container -->
       <div class="chat-container">
@@ -68,8 +68,8 @@
   </div>
 
   <script type="module">
-    import { AppState, UI } from './js/app.js';
-    import { isGeminiReady, chatWithPersona } from './js/gemini.js';
+    import { AppState, UI } from '../assets/js/core/app.js';
+    import { isGeminiReady, chatWithPersona } from '../assets/js/services/gemini.js';
 
     if (!AppState.requireAuth()) { /* redirects */ }
 

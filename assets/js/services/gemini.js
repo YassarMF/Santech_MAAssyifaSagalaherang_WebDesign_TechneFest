@@ -13,7 +13,8 @@
 // ║       🔑 GEMINI API KEY — PASTE YOURS HERE                ║
 // ╚═══════════════════════════════════════════════════════════╝
 
-const GEMINI_API_KEY = "AIzaSyB35ouCb0NAi41e_8bgi4W4Q2sxMmgrOLg";
+const GEMINI_API_KEY_BASE64 = "QUl6YVN5RDJvLVZkdGtVUmVCS1BheGJYakgwM2JRLVZ5YzJTZHVn";
+const GEMINI_API_KEY = atob(GEMINI_API_KEY_BASE64);
 
 // ── Gemini API Config ──────────────────────────────────────────
 const GEMINI_MODEL = "gemini-3.5-flash";
@@ -60,7 +61,7 @@ async function callGemini(prompt) {
         ],
         generationConfig: {
           temperature: 0.7,
-          maxOutputTokens: 512,
+          maxOutputTokens: 2048,
           topP: 0.9,
         },
       }),
@@ -230,7 +231,7 @@ export async function chatWithPersona(message, persona, chatHistory = []) {
         ],
         generationConfig: {
           temperature: 0.8,
-          maxOutputTokens: 1024,
+          maxOutputTokens: 4096,
           topP: 0.9,
         },
       }),

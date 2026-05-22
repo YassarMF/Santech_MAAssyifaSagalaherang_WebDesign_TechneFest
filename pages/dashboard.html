@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | EduVerse</title>
+  <meta name="description" content="Dashboard EduVerse: Ikuti learning path Data Analyst dan selesaikan modul interaktif untuk mendapatkan XP!">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../assets/css/main.css">
+
+
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="app-sidebar"></aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- Page Header -->
+      <header class="page-header">
+        <h1 class="page-title">🏠 Dashboard</h1>
+        <p class="page-subtitle">Pilih track belajarmu dan mulai petualangan coding-mu hari ini!</p>
+      </header>
+
+      <!-- Study Timer Widget -->
+      <div class="neo-card-static neo-card-sky study-timer-container">
+        <!-- CSS Donut Chart -->
+        <div id="study-timer-chart" class="study-timer-outer">
+          <div class="study-timer-inner">
+            <i class="fa-solid fa-stopwatch" style="color: var(--primary); font-size: 1.5rem; margin-bottom: 0.25rem;"></i>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="study-timer-title">Waktu Belajar Hari Ini</h3>
+          <div class="study-timer-clock" id="study-timer-text">00:00</div>
+          <p class="text-muted" style="margin-top: 0.5rem; font-size: 0.9rem;">Target harian: 30 menit. Terus semangat! 🚀</p>
+        </div>
+      </div>
+
+      <!-- Tracks Container -->
+      <div id="tracks-container">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Quick Links -->
+      <div class="quick-links" style="margin-top: 2.5rem;">
+        <a href="course.html" class="quick-link-card" id="quick-link-course">
+          <div class="quick-link-icon" style="background: var(--card-sky);">
+            <i class="fa-solid fa-map"></i>
+          </div>
+          <div>
+            <div class="quick-link-label">Materi Belajar</div>
+            <div class="quick-link-sublabel">Lihat syllabus interaktif</div>
+          </div>
+        </a>
+        <a href="career.html" class="quick-link-card" id="quick-link-career">
+          <div class="quick-link-icon" style="background: var(--card-peach);">
+            <i class="fa-solid fa-briefcase"></i>
+          </div>
+          <div>
+            <div class="quick-link-label">Career Tracks</div>
+            <div class="quick-link-sublabel">Jelajahi jalur karir</div>
+          </div>
+        </a>
+        <a href="assistant.html" class="quick-link-card" id="quick-link-assistant">
+          <div class="quick-link-icon" style="background: var(--card-lavender);">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div>
+            <div class="quick-link-label">AI Assistant</div>
+            <div class="quick-link-sublabel">Chat dengan AI personalmu</div>
+          </div>
+        </a>
+        <a href="leaderboard.html" class="quick-link-card" id="quick-link-leaderboard">
+          <div class="quick-link-icon" style="background: var(--card-lemon);">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+          <div>
+            <div class="quick-link-label">Leaderboard</div>
+            <div class="quick-link-sublabel">Lihat peringkat global</div>
+          </div>
+        </a>
+      </div>
+
+    </main>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav" id="mobile-nav"></nav>
+  </div>
+
+
+
+  <!-- Script -->
+  <script type="module">
+    import { AppState, UI } from '../assets/js/core/app.js?v=3';
+    import { renderTracksList } from '../assets/js/data/tracks-data.js?v=3';
+
+    // Auth check
+    if (!AppState.requireAuth()) {
+      // Will redirect
+    }
+
+    let currentUser = AppState.getUser();
+
+    // Render sidebar and mobile nav
+    UI.renderSidebar('dashboard');
+    UI.renderMobileNav('dashboard');
+
+    // Timer Logic
+    const timerText = document.getElementById('study-timer-text');
+    const timerChart = document.getElementById('study-timer-chart');
+    const DAILY_GOAL_SEC = 30 * 60; // 30 minutes
+
+    function updateTimerUI(seconds) {
+      if (!timerText) return;
+      const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      timerText.textContent = `${m}:${s}`;
+      
+      const percent = Math.min((seconds / DAILY_GOAL_SEC) * 100, 100);
+      const deg = (percent / 100) * 360;
+      timerChart.style.background = `conic-gradient(var(--primary) ${deg}deg, var(--white) ${deg}deg)`;
+    }
+
+    // Initial load
+    if (currentUser && currentUser.studyTime) {
+      const today = new Date().toISOString().split('T')[0];
+      if (currentUser.studyTime.date === today) {
+        updateTimerUI(currentUser.studyTime.seconds);
+      }
+    }
+
+    window.addEventListener('studyTimeUpdated', (e) => {
+      updateTimerUI(e.detail);
+    });
+
+    // Render Tracks Container
+    renderTracksList('tracks-container');
+  </script>
+</body>
+</html>

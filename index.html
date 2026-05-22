@@ -8,7 +8,7 @@
 
   <!-- Styles -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="assets/css/main.css">
 </head>
 <body class="auth-page">
 
@@ -20,6 +20,7 @@
   <div class="floating-shape shape-5"></div>
 
   <!-- Auth Card -->
+  <main>
   <div class="auth-card">
     <div class="neo-card-static" style="padding: 2.5rem;">
       
@@ -72,19 +73,7 @@
         </div>
 
         <!-- Error Message -->
-        <div id="login-error" class="hidden" style="
-          background: var(--card-pink);
-          border: 2px solid var(--danger);
-          border-radius: var(--radius-sm);
-          padding: 0.75rem 1rem;
-          font-size: 0.85rem;
-          font-weight: 600;
-          color: #991B1B;
-          margin-bottom: 1rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        ">
+        <div id="login-error" class="auth-error hidden">
           <i class="fa-solid fa-circle-exclamation"></i>
           <span id="login-error-text"></span>
         </div>
@@ -102,14 +91,15 @@
       </p>
     </div>
   </div>
+  </main>
 
   <!-- Script -->
   <script type="module">
-    import { AppState, UI } from './js/app.js';
+    import { AppState, UI } from './assets/js/core/app.js';
 
     // If already logged in, redirect to dashboard
     if (AppState.getUser()) {
-      window.location.href = 'dashboard.html';
+      window.location.href = 'pages/dashboard.html';
     }
 
     const form = document.getElementById('login-form');
@@ -166,7 +156,7 @@
         if (user) {
           // Small delay for UX
           setTimeout(() => {
-            window.location.href = 'dashboard.html';
+            window.location.href = 'pages/dashboard.html';
           }, 400);
         } else {
           showError('Terjadi kesalahan. Silakan coba lagi.');

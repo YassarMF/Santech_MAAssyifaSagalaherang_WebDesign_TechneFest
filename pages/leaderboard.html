@@ -8,7 +8,7 @@
 
   <!-- Styles -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="../assets/css/main.css">
 </head>
 <body>
   <div class="app-layout">
@@ -20,10 +20,10 @@
     <main class="main-content">
       
       <!-- Page Header -->
-      <div class="page-header">
+      <header class="page-header">
         <h1 class="page-title">🏆 Leaderboard Global</h1>
-        <p class="page-subtitle">Top 10 explorer dengan XP tertinggi. Bisakah kamu masuk daftar ini?</p>
-      </div>
+        <p class="page-subtitle">Peringkat pencetak XP terbanyak minggu ini.</p>
+      </header>
 
       <!-- Leaderboard Card -->
       <div class="neo-card-static" id="leaderboard-container">
@@ -68,7 +68,7 @@
           <p style="font-size: 3rem; margin-bottom: 1rem;">⚠️</p>
           <p style="font-family: var(--font-heading); font-weight: 800; margin-bottom: 0.5rem;">Gagal Memuat</p>
           <p class="text-muted" id="leaderboard-error-text">Periksa koneksi internet dan konfigurasi Firebase.</p>
-          <button class="neo-btn neo-btn-sm" style="margin-top: 1rem;" onclick="loadLeaderboard()">
+          <button class="neo-btn neo-btn-sm" aria-label="Coba Lagi" style="margin-top: 1rem;" onclick="loadLeaderboard()">
             <i class="fa-solid fa-rotate"></i> Coba Lagi
           </button>
         </div>
@@ -97,8 +97,8 @@
 
   <!-- Script -->
   <script type="module">
-    import { AppState, UI } from './js/app.js';
-    import { getLeaderboard, isFirebaseReady } from './js/firebase-config.js';
+    import { AppState, UI } from '../assets/js/core/app.js';
+    import { getLeaderboard, isFirebaseReady } from '../assets/js/core/firebase-config.js';
 
     // Auth check
     if (!AppState.requireAuth()) {

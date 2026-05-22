@@ -60,7 +60,8 @@ export const AppState = {
    */
   logout() {
     localStorage.removeItem(STORAGE_KEY);
-    window.location.href = 'index.html';
+    const basePath = window.location.pathname.includes('/pages/') ? '../' : './';
+    window.location.href = basePath + 'index.html';
   },
 
   /**
@@ -68,7 +69,8 @@ export const AppState = {
    */
   requireAuth() {
     if (!this.getUser()) {
-      window.location.href = 'index.html';
+      const basePath = window.location.pathname.includes('/pages/') ? '../' : './';
+      window.location.href = basePath + 'index.html';
       return false;
     }
     return true;
@@ -229,8 +231,38 @@ export const AppState = {
       console.error("Failed to refresh from Firestore:", e);
     }
     return user;
+  },
+
+  /**
+   * Initialize Global Study Timer
+   */
+  initStudyTimer() {
+    let user = this.getUser();
+    if (!user) return;
+
+    // Tick every 5 seconds
+    setInterval(() => {
+      user = this.getUser(); // re-fetch
+      if (!user) return;
+      
+      const today = new Date().toISOString().split('T')[0];
+      if (!user.studyTime || user.studyTime.date !== today) {
+        user.studyTime = { date: today, seconds: 0 };
+      }
+      
+      user.studyTime.seconds += 5;
+      this.saveUser(user);
+
+      // Dispatch event for UI
+      window.dispatchEvent(new CustomEvent('studyTimeUpdated', { detail: user.studyTime.seconds }));
+    }, 5000);
   }
 };
+
+// Start timer if user is logged in
+if (AppState.getUser()) {
+  AppState.initStudyTimer();
+}
 
 
 // ═══════════════════════════════════════════════════════════════
@@ -639,3 +671,155 @@ export const UI = {
 window.EduVerse = {
   logout: () => AppState.logout()
 };
+
+// ═══════════════════════════════════════════════════════════════
+// MODULE DATA — Python Backend Track
+// ═══════════════════════════════════════════════════════════════
+
+export const PythonData = [
+  {
+    id: "py_01_intro",
+    title: "Pengantar Python Backend",
+    icon: "🐍",
+    description: "Mengenal Python dan perannya sebagai bahasa backend modern.",
+    theory: `<h3>Mengapa Python untuk Backend?</h3>
+<p>Python adalah bahasa yang sangat populer untuk membuat server (backend), API, dan sistem berskala besar. Perusahaan seperti Instagram, Spotify, dan Netflix sangat bergantung pada Python!</p>
+<p>Sifatnya yang mudah dibaca membuat Python menjadi bahasa yang sempurna untuk pemula sekaligus *powerful* bagi profesional.</p>`,
+    quiz: {
+      question: "Apa fungsi utama Python di sisi Backend?",
+      options: [
+        "Membuat desain tampilan website",
+        "Mengelola logika server dan database",
+        "Menulis artikel untuk blog",
+        "Membuat animasi di browser"
+      ],
+      correctIndex: 1,
+      clue: "Backend berkaitan dengan logika di balik layar, bukan tampilan yang dilihat pengguna.",
+      topic: "Python Basics"
+    }
+  },
+  {
+    id: "py_02_vars",
+    title: "Variabel & Tipe Data",
+    icon: "📦",
+    description: "Cara menyimpan dan memanipulasi data di Python.",
+    theory: `<h3>Menyimpan Data di Python</h3>
+<p>Di Python, Anda tidak perlu mendeklarasikan tipe data secara eksplisit. Python cukup pintar untuk menebaknya!</p>
+<code>umur = 20<br>nama = "Budi"<br>is_aktif = True</code>
+<p>Tipe data utama: <strong>Integer</strong> (angka bulat), <strong>String</strong> (teks), <strong>Float</strong> (angka desimal), dan <strong>Boolean</strong> (Benar/Salah).</p>`,
+    quiz: {
+      question: "Manakah cara pembuatan variabel String yang benar di Python?",
+      options: [
+        "String nama = Budi",
+        "nama = \"Budi\"",
+        "var nama = 'Budi'",
+        "let nama = Budi"
+      ],
+      correctIndex: 1,
+      clue: "Di Python, kita tidak menggunakan kata kunci 'String', 'var', atau 'let'. Cukup nama variabel diikuti tanda sama dengan dan tanda kutip.",
+      topic: "Python Variables"
+    }
+  },
+  {
+    id: "py_03_logic",
+    title: "Logika Percabangan (If/Else)",
+    icon: "🔀",
+    description: "Membuat program yang bisa mengambil keputusan.",
+    theory: `<h3>If, Elif, Else</h3>
+<p>Program sering kali harus mengambil keputusan. Di Python, kita menggunakan <code>if</code>, <code>elif</code>, dan <code>else</code>.</p>
+<code>
+if umur >= 17:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print("Boleh buat KTP")<br>
+else:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;print("Belum cukup umur")
+</code>
+<p>Perhatikan <strong>indentasi</strong> (spasi di awal baris). Python menggunakan indentasi untuk memisahkan blok kode, bukan tanda kurung kurawal <code>{}</code>.</p>`,
+    quiz: {
+      question: "Apa yang digunakan Python untuk menandai blok kode (seperti di dalam if)?",
+      options: [
+        "Tanda kurung kurawal {}",
+        "Tanda kurung biasa ()",
+        "Indentasi (Spasi/Tab)",
+        "Tanda titik koma ;"
+      ],
+      correctIndex: 2,
+      clue: "Tidak seperti C++ atau JS yang memakai kurung kurawal {}, Python memaksa kodenya rapi dengan menggunakan spasi atau tab di awal baris.",
+      topic: "Python Logic"
+    }
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════
+// MODULE DATA — UI/UX Designer Track
+// ═══════════════════════════════════════════════════════════════
+
+export const UiUxData = [
+  {
+    id: "ux_01_intro",
+    title: "Pengantar UI & UX",
+    icon: "🎨",
+    description: "Perbedaan antara UI (User Interface) dan UX (User Experience).",
+    theory: `<h3>UI vs UX</h3>
+<p><strong>UI (User Interface)</strong> adalah segala sesuatu yang pengguna <em>lihat</em> dan sentuh: warna, tipografi, tombol, dan gambar.</p>
+<p><strong>UX (User Experience)</strong> adalah apa yang pengguna <em>rasakan</em> saat menggunakan produk: apakah mudah digunakan? Apakah membingungkan? Apakah mereka mencapai tujuannya dengan cepat?</p>
+<p>Desain yang cantik (UI) tanpa kemudahan (UX) sama saja dengan mobil sport yang tidak ada mesinnya!</p>`,
+    quiz: {
+      question: "Fokus utama dari UX (User Experience) adalah...",
+      options: [
+        "Memilih warna tombol yang menarik",
+        "Memastikan pengalaman pengguna lancar dan mudah",
+        "Menulis kode program agar website berjalan",
+        "Membuat animasi transisi halaman"
+      ],
+      correctIndex: 1,
+      clue: "UX (Experience) adalah tentang 'Pengalaman', sementara memilih warna lebih masuk ke ranah UI (Interface).",
+      topic: "UI/UX Basics"
+    }
+  },
+  {
+    id: "ux_02_principles",
+    title: "Prinsip Desain Hierarki",
+    icon: "📐",
+    description: "Mengarahkan mata pengguna dengan ukuran dan kontras.",
+    theory: `<h3>Hierarki Visual</h3>
+<p>Hierarki visual mengatur elemen-elemen di layar sehingga pengguna tahu mana yang paling penting untuk dilihat pertama kali.</p>
+<ul>
+  <li><strong>Ukuran:</strong> Teks besar akan dibaca lebih dulu.</li>
+  <li><strong>Kontras:</strong> Warna terang di atas latar gelap akan menonjol.</li>
+  <li><strong>Ruang Kosong (White Space):</strong> Memberi ruang bernapas agar desain tidak terlihat sumpek.</li>
+</ul>`,
+    quiz: {
+      question: "Mengapa Ruang Kosong (White space) penting dalam desain UI?",
+      options: [
+        "Untuk menghemat tinta saat dicetak",
+        "Agar desain terlihat penuh dan ramai",
+        "Memberi ruang bernapas agar informasi mudah dicerna",
+        "Karena desainer malas mengisi area tersebut"
+      ],
+      correctIndex: 2,
+      clue: "Ruang kosong membantu memisahkan elemen-elemen agar mata pengguna tidak cepat lelah dan bisa fokus pada informasi penting.",
+      topic: "Design Principles"
+    }
+  },
+  {
+    id: "ux_03_figma",
+    title: "Mengenal Figma",
+    icon: "🖌️",
+    description: "Tools standar industri untuk desain UI/UX.",
+    theory: `<h3>Figma: Kanvas Kolaborasi</h3>
+<p>Figma adalah aplikasi desain berbasis *browser* yang memungkinkan banyak orang mendesain secara bersamaan layaknya Google Docs.</p>
+<p>Di Figma, kita mengenal istilah <strong>Frame</strong> (kanvas desain seperti layar iPhone atau Desktop) dan <strong>Auto Layout</strong> (fitur ajaib untuk membuat elemen yang ukurannya menyesuaikan isi secara otomatis).</p>`,
+    quiz: {
+      question: "Apa fungsi dari fitur Auto Layout di Figma?",
+      options: [
+        "Mewarnai objek secara otomatis",
+        "Membuat elemen menyesuaikan ukuran secara otomatis dan rapi",
+        "Menghapus *background* foto",
+        "Menulis kode HTML/CSS"
+      ],
+      correctIndex: 1,
+      clue: "Auto Layout berfungsi mengatur padding, spacing, dan ukuran *container* agar selalu menyesuaikan isinya (responsif) tanpa digeser manual.",
+      topic: "Figma"
+    }
+  }
+];
